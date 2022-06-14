@@ -91,6 +91,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             this.BoardSizeLabel.Size = new System.Drawing.Size(114, 25);
             this.BoardSizeLabel.TabIndex = 3;
             this.BoardSizeLabel.Text = "Board Size:";
+            this.BoardSizeLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // label3
             // 

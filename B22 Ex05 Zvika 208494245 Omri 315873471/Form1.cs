@@ -67,9 +67,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void DoneButton_Click(object sender, EventArgs e)
         {
-            string gameSize = getGameSize();
             GameBoardForm gameBoard = new GameBoardForm(getGameSize());
-            gameBoard.Show();
+            gameBoard.ShowDialog();
         }
 
         private string getGameSize()
