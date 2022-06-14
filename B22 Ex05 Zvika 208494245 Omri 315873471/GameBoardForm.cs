@@ -37,10 +37,10 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private void GameBoardForm_Load(object sender, EventArgs e)
         {
             initLabels();
-            Left = 10;
+            Left = 80;
             Top = 100;
-            int newHeight = Top + 40 + m_GameSize*m_ButtonSize.Height;
-            int newWidth = Left*2+m_GameSize*m_ButtonSize.Width;
+            int newHeight = Top + m_GameSize*m_ButtonSize.Height;
+            int newWidth = Left + m_GameSize*m_ButtonSize.Width;
             Size = new Size(newWidth, newHeight);
             m_GameButtons = new Button[m_GameSize, m_GameSize];
             initGameBoard();
@@ -48,10 +48,10 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void initGameBoard()
         {
-            int left = Left, top = Top;
+            int left, top = Top/2 - m_GameSize;
             for (int i = 0; i < m_GameSize; i++)
             {
-                left = 4;
+                left = Left/2 - (m_GameSize-1);
                 for (int j = 0; j < m_GameSize; j++)
                 {
                     m_GameButtons[i, j] = new Button();
@@ -84,8 +84,9 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             Label playerTwo = new Label();
             playerOne.Text = m_PlayerOneName + ":" + m_PlayerOnePoints;
             playerTwo.Text = m_PlayerTwoName + ":" + m_PlayerTwoPoints;
-            Point playerOnePoint = new Point(10, 1);
-            Point playerTwoPoint = new Point(100, 1);
+            int PlayerTwoLabelLeftMargin = m_GameSize * m_ButtonSize.Width - 2*playerTwo.Text.Length - Left / 10;
+            Point playerOnePoint = new Point(Left/10, 15);
+            Point playerTwoPoint = new Point(PlayerTwoLabelLeftMargin, 15);
             playerOne.Location = playerOnePoint;
             playerTwo.Location = playerTwoPoint;
             playerOne.AutoSize = true;
