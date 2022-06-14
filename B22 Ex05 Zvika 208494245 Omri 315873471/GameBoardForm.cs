@@ -21,27 +21,42 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void GameBoardForm_Load(object sender, EventArgs e)
         {
-            this.Size = new Size( 300,   300);
+            CenterToScreen();
+            Size buttonSize = new Size(40, 40);
+            this.Left = 10;
+            this.Top = 100;
+            int newHeight = Top + 40 +m_GameSize*buttonSize.Height;
+            int newWidth = Left*2+m_GameSize*buttonSize.Width;
+            this.Size = new Size(newWidth, newHeight);
             m_GameButtons = new Button[m_GameSize, m_GameSize];
-            int left = 2, top = 2;
+            int left = Left, top = Top;
             for(int i = 0; i < m_GameSize; i++)
             {
-                left = 2;
+                left = 4;
                 for(int j = 0; j < m_GameSize; j++)
                 {
                     m_GameButtons[i, j] = new Button();
                     m_GameButtons[i, j].Location = new Point(left, top);
-                    m_GameButtons[i, j].Size = new Size(60, 60);
-                    left += 60;
-                    if((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0))
+                    m_GameButtons[i, j].Size = buttonSize;
+                    left += buttonSize.Width;
+                    if((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
                     {
                         m_GameButtons[i, j].Enabled = false;
+                    }
+
+                    if ((i < (m_GameSize / 2) - 1) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
+                    {
+                        m_GameButtons[i, j].Text = "O";
+                    }
+                    else if (i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
+                    {
+                        m_GameButtons[i, j].Text = "X";
                     }
 
                     Controls.Add(m_GameButtons[i,j]);
                 }
 
-                top += 60;
+                top += buttonSize.Height;
             }
         }
 

@@ -23,17 +23,30 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void SixOnSixButton_CheckedChanged(object sender, EventArgs e)
         {
-
+            if(SixOnSixButton.Checked)
+            {
+                EightOnEightButton.Checked = false;
+                TenOnTenButton.Checked = false;
+            }
+            
         }
 
         private void EightOnEightButton_CheckedChanged(object sender, EventArgs e)
         {
-
+            if(EightOnEightButton.Checked)
+            {
+                SixOnSixButton.Checked = false;
+                TenOnTenButton.Checked = false;
+            }
         }
 
         private void TenOnTenButton_CheckedChanged(object sender, EventArgs e)
         {
-
+            if(TenOnTenButton.Checked)
+            {
+                SixOnSixButton.Checked = false;
+                EightOnEightButton.Checked = false;
+            }
         }
 
         private void PlayersLabel_Click_1(object sender, EventArgs e)
@@ -68,6 +81,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private void DoneButton_Click(object sender, EventArgs e)
         {
             GameBoardForm gameBoard = new GameBoardForm(getGameSize());
+            gameBoard.StartPosition = FormStartPosition.CenterScreen;
             gameBoard.ShowDialog();
         }
 
@@ -81,12 +95,12 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             if (EightOnEightButton.Checked)
             {
-                gameSize = SixOnSixButton.Text;
+                gameSize = EightOnEightButton.Text;
             }
 
             if (TenOnTenButton.Checked)
             {
-                gameSize = SixOnSixButton.Text;
+                gameSize = TenOnTenButton.Text;
             }
 
             return gameSize;
