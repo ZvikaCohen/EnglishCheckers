@@ -48,6 +48,9 @@
       <DependentUpon>GameBoardForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI.cs" />
+    <Compile Include="UpgradedButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
