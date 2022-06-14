@@ -11,6 +11,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 {
     public partial class GameBoardForm : Form
     {
+        private PlayersTurn.ePlayersTurn m_CurrentTurn = PlayersTurn.ePlayersTurn.Player1;
         Size m_ButtonSize = new Size(40, 40);
         private int m_GameSize;
         private string m_PlayerOneName, m_PlayerTwoName;
@@ -50,6 +51,21 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             initGameBoard();
         }
 
+        private void buttonClicked(int i_Row, int i_Col)
+        {
+            if(m_GameButtons[i_Row, i_Col].Text == "X" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
+            {
+                // Do the button functions --> move, eat, etc.)
+                // If the move is valid, change turn to second player.
+            }
+            else if(m_GameButtons[i_Row, i_Col].Text == "O" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2)
+            {
+                // Do the button functions --> move, eat, etc.)
+                // If the move is valid, change turn to first player.
+
+            }
+        }
+
         private void initGameBoard()
         {
             int left, top = Top/2 - m_GameSize;
@@ -78,6 +94,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     }
 
                     Controls.Add(m_GameButtons[i, j]);
+                    int copyOfI = i, copyOfJ = j;
+                    m_GameButtons[i, j].Click += (sender, e) => buttonClicked(copyOfI, copyOfJ);
                 }
 
                 top += m_ButtonSize.Height;
