@@ -17,6 +17,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private string m_PlayerOneName, m_PlayerTwoName;
         private int m_PlayerOnePoints = 0, m_PlayerTwoPoints = 0;
         private UpgradedButton[,] m_GameButtons;
+        private UpgradedButton m_CurrentPressedButton = null;
+
         public GameBoardForm(string i_GameSize, string i_PlayerOneName, string i_PlayerTwoName)
         {
             m_GameSize = getBoardSize(i_GameSize);
@@ -35,7 +37,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_PlayerTwoName = i_PlayerTwoName;
             if (i_PlayerTwoName == "")
             {
-                m_PlayerTwoName = "Player 2:";
+                m_PlayerTwoName = "Player 2";
             }
 
         }
@@ -53,8 +55,24 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void buttonClicked(int i_Row, int i_Col)
         {
+            // If you pressed a button and there is no one clicked - all good.
+            // if you pressed a button that IS NOT SPACE while another button is being pressed, reset them.
+            if(m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "")
+            {
+                m_CurrentPressedButton = m_GameButtons[i_Row, i_Col];
+                m_CurrentPressedButton.BackColor = Color.FromArgb(100, 200, 0);
+            }
+            else if(m_GameButtons[i_Row, i_Col].Text != "")
+            {
+                m_CurrentPressedButton.BackColor = default(Color);
+                m_CurrentPressedButton = null;
+            }
+
+
+
             if(m_GameButtons[i_Row, i_Col].Text == "X" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
             {
+
                 // Do the button functions --> move, eat, etc.)
                 // If the move is valid, change turn to second player.
             }
@@ -62,8 +80,9 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 // Do the button functions --> move, eat, etc.)
                 // If the move is valid, change turn to first player.
-
             }
+            
+
         }
 
         private void initGameBoard()
@@ -120,6 +139,17 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             Controls.Add(playerTwo);
         }
 
+        private void changeTurn()
+        {
+            if(m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
+            {
+                m_CurrentTurn = PlayersTurn.ePlayersTurn.Player2;
+            }
+            else
+            {
+                m_CurrentTurn = PlayersTurn.ePlayersTurn.Player1;
+            }
+        }
         private int getBoardSize(string i_BoardSize)
         {
             int size = 0;
