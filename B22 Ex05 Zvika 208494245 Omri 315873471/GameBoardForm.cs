@@ -15,10 +15,16 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private int m_GameSize;
         private string m_PlayerOneName, m_PlayerTwoName;
         private int m_PlayerOnePoints = 0, m_PlayerTwoPoints = 0;
-        private Button[,] m_GameButtons;
+        private UpgradedButton[,] m_GameButtons;
         public GameBoardForm(string i_GameSize, string i_PlayerOneName, string i_PlayerTwoName)
         {
             m_GameSize = getBoardSize(i_GameSize);
+            setPlayersNames(i_PlayerOneName, i_PlayerTwoName);
+            InitializeComponent();
+        }
+
+        private void setPlayersNames(string i_PlayerOneName, string i_PlayerTwoName)
+        {
             m_PlayerOneName = i_PlayerOneName;
             if (i_PlayerOneName == "")
             {
@@ -26,14 +32,12 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
 
             m_PlayerTwoName = i_PlayerTwoName;
-            if(i_PlayerTwoName == "")
+            if (i_PlayerTwoName == "")
             {
                 m_PlayerTwoName = "Player 2:";
             }
 
-            InitializeComponent();
         }
-
         private void GameBoardForm_Load(object sender, EventArgs e)
         {
             initLabels();
@@ -42,7 +46,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             int newHeight = Top + 40 + m_GameSize*m_ButtonSize.Height;
             int newWidth = Left*2+m_GameSize*m_ButtonSize.Width;
             Size = new Size(newWidth, newHeight);
-            m_GameButtons = new Button[m_GameSize, m_GameSize];
+            m_GameButtons = new UpgradedButton[m_GameSize, m_GameSize];
             initGameBoard();
         }
 
@@ -54,7 +58,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 left = 4;
                 for (int j = 0; j < m_GameSize; j++)
                 {
-                    m_GameButtons[i, j] = new Button();
+                    m_GameButtons[i, j] = new UpgradedButton(new Point(i,j));
                     m_GameButtons[i, j].Location = new Point(left, top);
                     m_GameButtons[i, j].Size = m_ButtonSize;
                     left += m_ButtonSize.Width;
@@ -67,6 +71,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     {
                         m_GameButtons[i, j].Text = "O";
                     }
+
                     else if (i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "X";
@@ -117,6 +122,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                         break;
                     }
             }
+
             return size;
         }
     }
