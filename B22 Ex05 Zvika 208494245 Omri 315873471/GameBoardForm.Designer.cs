@@ -35,7 +35,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(642, 493);
+            this.ClientSize = new System.Drawing.Size(510, 493);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
