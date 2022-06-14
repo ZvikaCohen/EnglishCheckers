@@ -11,35 +11,54 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 {
     public partial class GameBoardForm : Form
     {
+        Size m_ButtonSize = new Size(40, 40);
         private int m_GameSize;
+        private string m_PlayerOneName, m_PlayerTwoName;
+        private int m_PlayerOnePoints = 0, m_PlayerTwoPoints = 0;
         private Button[,] m_GameButtons;
-        public GameBoardForm(string i_GameSize)
+        public GameBoardForm(string i_GameSize, string i_PlayerOneName, string i_PlayerTwoName)
         {
             m_GameSize = getBoardSize(i_GameSize);
+            m_PlayerOneName = i_PlayerOneName;
+            if (i_PlayerOneName == "")
+            {
+                m_PlayerOneName = "Player 1";
+            }
+
+            m_PlayerTwoName = i_PlayerTwoName;
+            if(i_PlayerTwoName == "")
+            {
+                m_PlayerTwoName = "Player 2:";
+            }
+
             InitializeComponent();
         }
 
         private void GameBoardForm_Load(object sender, EventArgs e)
         {
-            CenterToScreen();
-            Size buttonSize = new Size(40, 40);
-            this.Left = 10;
-            this.Top = 100;
-            int newHeight = Top + 40 +m_GameSize*buttonSize.Height;
-            int newWidth = Left*2+m_GameSize*buttonSize.Width;
-            this.Size = new Size(newWidth, newHeight);
+            initLabels();
+            Left = 10;
+            Top = 100;
+            int newHeight = Top + 40 + m_GameSize*m_ButtonSize.Height;
+            int newWidth = Left*2+m_GameSize*m_ButtonSize.Width;
+            Size = new Size(newWidth, newHeight);
             m_GameButtons = new Button[m_GameSize, m_GameSize];
+            initGameBoard();
+        }
+
+        private void initGameBoard()
+        {
             int left = Left, top = Top;
-            for(int i = 0; i < m_GameSize; i++)
+            for (int i = 0; i < m_GameSize; i++)
             {
                 left = 4;
-                for(int j = 0; j < m_GameSize; j++)
+                for (int j = 0; j < m_GameSize; j++)
                 {
                     m_GameButtons[i, j] = new Button();
                     m_GameButtons[i, j].Location = new Point(left, top);
-                    m_GameButtons[i, j].Size = buttonSize;
-                    left += buttonSize.Width;
-                    if((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
+                    m_GameButtons[i, j].Size = m_ButtonSize;
+                    left += m_ButtonSize.Width;
+                    if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
                     {
                         m_GameButtons[i, j].Enabled = false;
                     }
@@ -53,11 +72,28 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                         m_GameButtons[i, j].Text = "X";
                     }
 
-                    Controls.Add(m_GameButtons[i,j]);
+                    Controls.Add(m_GameButtons[i, j]);
                 }
 
-                top += buttonSize.Height;
+                top += m_ButtonSize.Height;
             }
+        }
+        private void initLabels()
+        {
+            Label playerOne = new Label();
+            Label playerTwo = new Label();
+            playerOne.Text = m_PlayerOneName + ":" + m_PlayerOnePoints;
+            playerTwo.Text = m_PlayerTwoName + ":" + m_PlayerTwoPoints;
+            Point playerOnePoint = new Point(10, 1);
+            Point playerTwoPoint = new Point(100, 1);
+            playerOne.Location = playerOnePoint;
+            playerTwo.Location = playerTwoPoint;
+            playerOne.AutoSize = true;
+            playerTwo.AutoSize = true;
+            playerOne.Font = new Font("Arial", 12);
+            playerTwo.Font = new Font("Arial", 12);
+            Controls.Add(playerOne);
+            Controls.Add(playerTwo);
         }
 
         private int getBoardSize(string i_BoardSize)
