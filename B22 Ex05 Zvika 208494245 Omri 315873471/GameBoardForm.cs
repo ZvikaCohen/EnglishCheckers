@@ -12,7 +12,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
     public partial class GameBoardForm : Form
     {
         private PlayersTurn.ePlayersTurn m_CurrentTurn = PlayersTurn.ePlayersTurn.Player1;
-        Size m_ButtonSize = new Size(40, 40);
+        private Size m_ButtonSize = new Size(40, 40);
         private int m_GameSize;
         private string m_PlayerOneName, m_PlayerTwoName;
         private int m_PlayerOneCoinsCount, m_PlayerTwoCoinsCount;
@@ -20,7 +20,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private UpgradedButton[,] m_GameButtons;
         private UpgradedButton[] m_Player1CoinSet, m_Player2CoinSet;
         private UpgradedButton m_CurrentPressedButton = null;
-        private Label playerOne, playerTwo;
+        private Label m_PlayerOne, m_PlayerTwo;
+        private Color m_ValidSpotColor = Color.BurlyWood , m_CurrentPlayerColor = Color.BurlyWood;
 
         public GameBoardForm(string i_GameSize, string i_PlayerOneName, string i_PlayerTwoName)
         {
@@ -74,7 +75,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             else // Second button press
             {
-                if(stepIsValidAndPossible(i_Row, i_Col))
+                if(stepIsValidAndPossible(i_Row, i_Col)) 
                 {
                     makeStep(i_Row, i_Col);
                     changeTurn();
@@ -105,6 +106,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private bool stepIsValidAndPossible(int i_Row, int i_Col)
         {
+            UpgradedButton pressedButton = m_GameButtons[i_Row, i_Col];
+            bool answer = pressedButton.BackColor == m_ValidSpotColor ? true : false;
             return true;
         }
 
@@ -113,7 +116,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_GameButtons[i_NewRow, i_NewCol].Text = m_CurrentPressedButton.Text;
             m_CurrentPressedButton.Text = "";
             resetSteps(i_NewRow, i_NewCol);
-
         }
         private void markSelectedButton(int i_Row, int i_Col)
         {
@@ -177,22 +179,22 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         }
         private void initLabels()
         {
-            playerOne = new Label(); 
-            playerTwo = new Label();
-            playerOne.Text = m_PlayerOneName + ":" + m_PlayerOnePoints;
-            playerTwo.Text = m_PlayerTwoName + ":" + m_PlayerTwoPoints;
-            int PlayerTwoLabelLeftMargin = m_GameSize * m_ButtonSize.Width - 2*playerTwo.Text.Length - Left / 10;
+            m_PlayerOne = new Label();
+            m_PlayerTwo = new Label();
+            m_PlayerOne.Text = m_PlayerOneName + ":" + m_PlayerOnePoints;
+            m_PlayerTwo.Text = m_PlayerTwoName + ":" + m_PlayerTwoPoints;
+            int playerTwoLabelLeftMargin = m_GameSize * m_ButtonSize.Width - 2* m_PlayerTwo.Text.Length - Left / 10;
             Point playerOnePoint = new Point(Left/10, 15);
-            Point playerTwoPoint = new Point(PlayerTwoLabelLeftMargin, 15);
-            playerOne.Location = playerOnePoint;
-            playerTwo.Location = playerTwoPoint;
-            playerOne.AutoSize = true;
-            playerTwo.AutoSize = true;
-            playerOne.Font = new Font("Arial", 12);
-            playerTwo.Font = new Font("Arial", 12);
-            Controls.Add(playerOne);
-            Controls.Add(playerTwo);
-            playerOne.BackColor = Color.Chocolate;
+            Point playerTwoPoint = new Point(playerTwoLabelLeftMargin, 15);
+            m_PlayerOne.Location = playerOnePoint;
+            m_PlayerTwo.Location = playerTwoPoint;
+            m_PlayerOne.AutoSize = true;
+            m_PlayerTwo.AutoSize = true;
+            m_PlayerOne.Font = new Font("Arial", 12);
+            m_PlayerTwo.Font = new Font("Arial", 12);
+            Controls.Add(m_PlayerOne);
+            Controls.Add(m_PlayerTwo);
+            m_PlayerOne.BackColor = m_CurrentPlayerColor;
         }
 
         private void checkAndUpdateWhoCanEatForCurrentPlayer()
@@ -205,8 +207,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_CurrentTurn = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1
                                 ? PlayersTurn.ePlayersTurn.Player2
                                 : PlayersTurn.ePlayersTurn.Player1;
-            playerOne.BackColor = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1 ? Color.Chocolate : default;
-            playerTwo.BackColor = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2 ? Color.Chocolate : default;
+            m_PlayerOne.BackColor = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1 ? m_CurrentPlayerColor : default;
+            m_PlayerTwo.BackColor = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2 ? m_CurrentPlayerColor : default;
         }
         private int getBoardSize(string i_BoardSize)
         {
