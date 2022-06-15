@@ -18,6 +18,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private int m_PlayerOneCoinsCount, m_PlayerTwoCoinsCount;
         private int m_PlayerOnePoints = 0, m_PlayerTwoPoints = 0;
         private UpgradedButton[,] m_GameButtons;
+        private UpgradedButton[] m_Player1CoinSet, m_Player2CoinSet;
         private UpgradedButton m_CurrentPressedButton = null;
         private Label m_PlayerOne, m_PlayerTwo;
         private Color m_ValidSpotColor = Color.BurlyWood , m_CurrentPlayerColor = Color.BurlyWood;
@@ -69,7 +70,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             else if(m_GameButtons[i_Row, i_Col].Text != "") // Else if: There is already a button clicked.
             {
-                resetSteps();
+                resetSteps(i_Row, i_Col);
             }
 
             else // Second button press
@@ -78,11 +79,12 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 {
                     makeStep(i_Row, i_Col);
                     changeTurn();
+                    checkAndUpdateWhoCanEatForCurrentPlayer();
                 }
 
                 else
                 {
-                    resetSteps();
+                    resetSteps(i_Row, i_Col);
                 }
             }
 
@@ -113,7 +115,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         {
             m_GameButtons[i_NewRow, i_NewCol].Text = m_CurrentPressedButton.Text;
             m_CurrentPressedButton.Text = "";
-            resetSteps();
+            resetSteps(i_NewRow, i_NewCol);
         }
         private void markSelectedButton(int i_Row, int i_Col)
         {
@@ -132,10 +134,11 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             return answer;
         }
 
-        private void resetSteps()
+        private void resetSteps(int i_Row, int i_Col)
         {
             m_CurrentPressedButton.BackColor = default(Color);
             m_CurrentPressedButton = null;
+            markSelectedButton(i_Row, i_Col);
         }
 
 
@@ -192,6 +195,11 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             Controls.Add(m_PlayerOne);
             Controls.Add(m_PlayerTwo);
             m_PlayerOne.BackColor = m_CurrentPlayerColor;
+        }
+
+        private void checkAndUpdateWhoCanEatForCurrentPlayer()
+        {
+
         }
 
         private void changeTurn()
