@@ -22,7 +22,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private UpgradedButton[] m_Player2CoinSet;
         private UpgradedButton m_CurrentPressedButton = null;
         private Label m_PlayerOne, m_PlayerTwo;
-        private Color m_ValidSpotColor = Color.BurlyWood , m_CurrentPlayerColor = Color.BurlyWood;
+        private Color m_ValidSpotColor = Color.BurlyWood, m_CurrentPlayerColor = Color.BurlyWood;
         private bool m_EatingIsPossible = false;
 
         public GameBoardForm(string i_GameSize, string i_PlayerOneName, string i_PlayerTwoName)
@@ -67,12 +67,12 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 markSelectedButton(i_Row, i_Col);
                 checkEatingStepsForPlayerButtons();
-                showPossibleStepsFromCurrentCoin();
             }
 
             else if(m_GameButtons[i_Row, i_Col].Text != "") // Else if: There is already a button clicked.
             {
                 resetSteps(i_Row, i_Col);
+                markSelectedButton(i_Row, i_Col);
             }
 
             else // Second button press
@@ -87,6 +87,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 else
                 {
                     resetSteps(i_Row, i_Col);
+                    markSelectedButton(i_Row,i_Col);
                 }
             }
 
@@ -101,11 +102,61 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         }
 
-        private void showPossibleStepsFromCurrentCoin()
+        private void showPossibleStepsFromCurrentCoin(int i_CurrentRow, int i_CurrentCol)
         {
+            // Check if player has steps to eat with. If yes, mark the eating steps.
 
+            // If not:
+            if(m_GameButtons[i_CurrentRow, i_CurrentCol].Text == "X") // Player 1
+            {
+                markUpLeft(i_CurrentRow, i_CurrentCol);
+                markUpRight(i_CurrentRow, i_CurrentCol);
+            }
+            else if (m_GameButtons[i_CurrentRow, i_CurrentCol].Text == "O") // Player 2
+            {
+                markDownLeft(i_CurrentRow, i_CurrentCol);
+                markDownRight(i_CurrentRow, i_CurrentCol);
+            }
+            else // King
+            {
+                markUpLeft(i_CurrentRow, i_CurrentCol);
+                markUpRight(i_CurrentRow, i_CurrentCol);
+                markDownLeft(i_CurrentRow, i_CurrentCol);
+                markDownRight(i_CurrentRow, i_CurrentCol);
+            }
         }
 
+        private void markUpLeft(int i_Row, int i_Col)
+        {
+            if(i_Row - 1 > 0 && i_Col - 1 >= 0 && m_GameButtons[i_Row-1, i_Col-1].Text == "")
+            {
+                m_GameButtons[i_Row - 1, i_Col - 1].BackColor = m_ValidSpotColor;
+            }
+        }
+
+        private void markDownLeft(int i_Row, int i_Col)
+        {
+            if (i_Row + 1 < m_GameSize && i_Col - 1 >= 0 && m_GameButtons[i_Row + 1, i_Col - 1].Text == "")
+            {
+                m_GameButtons[i_Row + 1, i_Col - 1].BackColor = m_ValidSpotColor;
+            }
+        }
+
+        private void markUpRight(int i_Row, int i_Col)
+        {
+            if (i_Row - 1 >= 0 && i_Col + 1 < m_GameSize && m_GameButtons[i_Row - 1, i_Col + 1].Text == "")
+            {
+                m_GameButtons[i_Row - 1, i_Col + 1].BackColor = m_ValidSpotColor;
+            }
+        }
+
+        private void markDownRight(int i_Row, int i_Col)
+        {
+            if (i_Row + 1 < m_GameSize && i_Col + 1 < m_GameSize && m_GameButtons[i_Row + 1, i_Col + 1].Text == "")
+            {
+                m_GameButtons[i_Row + 1, i_Col + 1].BackColor = m_ValidSpotColor;
+            }
+        }
         private bool stepIsValidAndPossible(int i_Row, int i_Col)
         {
             UpgradedButton pressedButton = m_GameButtons[i_Row, i_Col];
@@ -125,6 +176,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 m_CurrentPressedButton = m_GameButtons[i_Row, i_Col];
                 m_CurrentPressedButton.BackColor = Color.FromArgb(100, 200, 0);
+                showPossibleStepsFromCurrentCoin(i_Row, i_Col);
             }
         }
 
@@ -140,7 +192,16 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         {
             m_CurrentPressedButton.BackColor = default(Color);
             m_CurrentPressedButton = null;
-            markSelectedButton(i_Row, i_Col);
+            for (int i = 0; i < m_GameSize; i++)
+            {
+                for (int j = 0; j < m_GameSize; j++)
+                {
+                    if (m_GameButtons[i, j].Enabled)
+                    {
+                        m_GameButtons[i, j].BackColor = default(Color);
+                    }
+                }
+            }
         }
 
 
@@ -163,6 +224,10 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
                     {
                         m_GameButtons[i, j].Enabled = false;
+                    }
+                    else
+                    {
+                        m_GameButtons[i, j].BackColor = default(Color);
                     }
 
                     if ((i < (m_GameSize / 2) - 1) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
