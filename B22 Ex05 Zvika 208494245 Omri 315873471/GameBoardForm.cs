@@ -15,6 +15,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         Size m_ButtonSize = new Size(40, 40);
         private int m_GameSize;
         private string m_PlayerOneName, m_PlayerTwoName;
+        private int m_PlayerOneCoinsCount, m_PlayerTwoCoinsCount;
         private int m_PlayerOnePoints = 0, m_PlayerTwoPoints = 0;
         private UpgradedButton[,] m_GameButtons;
         private UpgradedButton m_CurrentPressedButton = null;
@@ -53,37 +54,57 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             initGameBoard();
         }
 
+
+
         private void buttonClicked(int i_Row, int i_Col)
         {
-            // If you pressed a button and there is no one clicked - all good.
-            // if you pressed a button that IS NOT SPACE while another button is being pressed, reset them.
-            if(m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "")
+            if(m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "") // First button press
+            {
+                markSelectedButton(i_Row, i_Col);
+                checkEatingStepsForPlayerButtons();
+                showPossibleStepsFromCurrentCoin();
+            }
+
+            else if(m_GameButtons[i_Row, i_Col].Text != "") // Else if: There is already a button clicked.
+            {
+                resetSteps();
+            }
+
+            else // Second button press
+            {
+                if(stepIsValidAndPossible())
+                {
+                    makeStep();
+                    changeTurn();
+                }
+                else
+                {
+                    resetSteps();
+                }
+            }
+
+            // button clicked. If it's nothing - don't do anything.
+            // If it's someone, check if it's his turn. If yes, mark it.
+            // Show possible steps from this coin.
+            // If there is an eating possible, show only eating moves.
+        }
+
+        private void markSelectedButton(int i_Row, int i_Col)
+        {
+            if ((m_GameButtons[i_Row, i_Col].Text == "X" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
+                || (m_GameButtons[i_Row, i_Col].Text == "O" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2))
             {
                 m_CurrentPressedButton = m_GameButtons[i_Row, i_Col];
                 m_CurrentPressedButton.BackColor = Color.FromArgb(100, 200, 0);
             }
-            else if(m_GameButtons[i_Row, i_Col].Text != "")
-            {
-                m_CurrentPressedButton.BackColor = default(Color);
-                m_CurrentPressedButton = null;
-            }
-
-
-
-            if(m_GameButtons[i_Row, i_Col].Text == "X" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
-            {
-
-                // Do the button functions --> move, eat, etc.)
-                // If the move is valid, change turn to second player.
-            }
-            else if(m_GameButtons[i_Row, i_Col].Text == "O" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2)
-            {
-                // Do the button functions --> move, eat, etc.)
-                // If the move is valid, change turn to first player.
-            }
-            
-
         }
+
+        private void resetSteps()
+        {
+            m_CurrentPressedButton.BackColor = default(Color);
+            m_CurrentPressedButton = null;
+        }
+
 
         private void initGameBoard()
         {
@@ -141,14 +162,9 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void changeTurn()
         {
-            if(m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
-            {
-                m_CurrentTurn = PlayersTurn.ePlayersTurn.Player2;
-            }
-            else
-            {
-                m_CurrentTurn = PlayersTurn.ePlayersTurn.Player1;
-            }
+            m_CurrentTurn = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1
+                                ? PlayersTurn.ePlayersTurn.Player2
+                                : PlayersTurn.ePlayersTurn.Player1;
         }
         private int getBoardSize(string i_BoardSize)
         {
@@ -157,16 +173,19 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 case "6x6":
                     {
+                        m_PlayerOneCoinsCount = m_PlayerTwoCoinsCount = 6;
                         size = 6;
                         break;
                     }
                 case "8x8":
                     {
+                        m_PlayerOneCoinsCount = m_PlayerTwoCoinsCount = 12;
                         size = 8;
                         break;
                     }
                 case "10x10":
                     {
+                        m_PlayerOneCoinsCount = m_PlayerTwoCoinsCount = 20;
                         size = 10;
                         break;
                     }
