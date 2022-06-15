@@ -11,9 +11,13 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
     {
         public Point m_PositionOnBoard { get; set; }
 
+        public Point[,] m_PossibleEatingPoints;
+
         public UpgradedButton(Point i_PointOnBoard)
         {
             m_PositionOnBoard = i_PointOnBoard;
         }
+
+
     }
 }
