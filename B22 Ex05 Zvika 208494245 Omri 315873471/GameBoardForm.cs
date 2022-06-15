@@ -19,6 +19,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private int m_PlayerOnePoints = 0, m_PlayerTwoPoints = 0;
         private UpgradedButton[,] m_GameButtons;
         private UpgradedButton m_CurrentPressedButton = null;
+        private Label playerOne, playerTwo;
 
         public GameBoardForm(string i_GameSize, string i_PlayerOneName, string i_PlayerTwoName)
         {
@@ -173,8 +174,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         }
         private void initLabels()
         {
-            Label playerOne = new Label();
-            Label playerTwo = new Label();
+            playerOne = new Label(); 
+            playerTwo = new Label();
             playerOne.Text = m_PlayerOneName + ":" + m_PlayerOnePoints;
             playerTwo.Text = m_PlayerTwoName + ":" + m_PlayerTwoPoints;
             int PlayerTwoLabelLeftMargin = m_GameSize * m_ButtonSize.Width - 2*playerTwo.Text.Length - Left / 10;
@@ -188,6 +189,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             playerTwo.Font = new Font("Arial", 12);
             Controls.Add(playerOne);
             Controls.Add(playerTwo);
+            playerOne.BackColor = Color.Chocolate;
         }
 
         private void changeTurn()
@@ -195,6 +197,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_CurrentTurn = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1
                                 ? PlayersTurn.ePlayersTurn.Player2
                                 : PlayersTurn.ePlayersTurn.Player1;
+            playerOne.BackColor = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1 ? Color.Chocolate : default;
+            playerTwo.BackColor = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2 ? Color.Chocolate : default;
         }
         private int getBoardSize(string i_BoardSize)
         {
