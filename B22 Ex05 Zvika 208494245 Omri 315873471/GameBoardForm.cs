@@ -22,6 +22,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private UpgradedButton m_CurrentPressedButton = null;
         private Label m_PlayerOne, m_PlayerTwo;
         private Color m_ValidSpotColor = Color.BurlyWood , m_CurrentPlayerColor = Color.BurlyWood;
+        private bool m_EatingIsPossible = false;
 
         public GameBoardForm(string i_GameSize, string i_PlayerOneName, string i_PlayerTwoName)
         {
@@ -144,7 +145,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void initGameBoard()
         {
-            int left, top = Top/2 - m_GameSize;
+            int left, top = Top/2 - m_GameSize, coinsCount = 0;
             for (int i = 0; i < m_GameSize; i++)
             {
                 left = Left/2 - (m_GameSize-1);
@@ -162,11 +163,15 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     if ((i < (m_GameSize / 2) - 1) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "O";
+                        m_Player1CoinSet[coinsCount % 2] = m_GameButtons[i, j];
+                        ++coinsCount;
                     }
 
                     else if (i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "X";
+                        m_Player2CoinSet[coinsCount % 2] = m_GameButtons[i, j];
+                        ++coinsCount;
                     }
 
                     Controls.Add(m_GameButtons[i, j]);
@@ -199,8 +204,57 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void checkAndUpdateWhoCanEatForCurrentPlayer()
         {
-
+            if (m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
+            {
+                foreach (UpgradedButton Coin in m_Player1CoinSet)
+                {
+                    canCoinEat(Coin);
+                }
+            }
+            else
+            {
+                foreach (UpgradedButton Coin in m_Player2CoinSet)
+                {
+                    canCoinEat(Coin);
+                }
+            }
         }
+
+        private void canCoinEat(UpgradedButton i_Coin)
+        {
+            int x = i_Coin.m_PositionOnBoard.X, y = i_Coin.m_PositionOnBoard.Y;
+
+            if(i_Coin.Text == "X" /*|| is king*/)
+            {
+                if(m_GameButtons[y-1,x+1].Text == "Y" && m_GameButtons[y-2,x+2].Text == null)
+                {
+                    m_EatingIsPossible = true;
+                    i_Coin.m_CanEatToTheRight = true;
+                }
+
+                if (m_GameButtons[y - 1, x - 1].Text == "Y" && m_GameButtons[y - 2, x - 2].Text == null)
+                {
+                    m_EatingIsPossible = true;
+                    i_Coin.m_canEatToTheLeft = true;
+                }
+            }
+
+            else if(i_Coin.Text == "Y" /*|| is king*/)
+            {
+                if (m_GameButtons[y + 1, x - 1].Text == "Y" && m_GameButtons[y + 2, x - 2].Text == null)
+                {
+                    m_EatingIsPossible = true;
+                    i_Coin.m_CanEatToTheRight = true;
+                }
+
+                if (m_GameButtons[y + 1, x + 1].Text == "Y" && m_GameButtons[y + 2, x + 2].Text == null)
+                {
+                    m_EatingIsPossible = true;
+                    i_Coin.m_canEatToTheLeft = true;
+                }
+            }
+        }
+
 
         private void changeTurn()
         {
