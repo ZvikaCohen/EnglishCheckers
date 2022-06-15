@@ -63,10 +63,11 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void buttonClicked(int i_Row, int i_Col)
         {
-            if(m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "") // First button press
+            checkAndUpdateWhoCanEatForCurrentPlayer();
+            if (m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "") // First button press
             {
                 markSelectedButton(i_Row, i_Col);
-                checkEatingStepsForPlayerButtons();
+              //  checkAndUpdateWhoCanEatForCurrentPlayer();
             }
 
             else if(m_GameButtons[i_Row, i_Col].Text != "") // Else if: There is already a button clicked.
@@ -97,14 +98,31 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             // If there is an eating possible, show only eating moves.
         }
 
-        private void checkEatingStepsForPlayerButtons()
-        {
-
-        }
-
         private void showPossibleStepsFromCurrentCoin(int i_CurrentRow, int i_CurrentCol)
         {
             // Check if player has steps to eat with. If yes, mark the eating steps.
+            if(m_EatingIsPossible)
+            {
+                if(m_GameButtons[i_CurrentRow, i_CurrentRow].m_CanEatUpRight)
+                {
+                    markUpRight(i_CurrentRow-1, i_CurrentCol + 1);
+                }
+
+                if (m_GameButtons[i_CurrentRow, i_CurrentRow].m_CanEatUpLeft)
+                {
+                    markUpLeft(i_CurrentRow-1, i_CurrentCol - 1);
+                }
+
+                if (m_GameButtons[i_CurrentRow, i_CurrentRow].m_CanEatDownRight)
+                {
+                    markDownRight(i_CurrentRow+1, i_CurrentCol + 1);
+                }
+
+                if (m_GameButtons[i_CurrentRow, i_CurrentRow].m_CanEatDownLeft)
+                {
+                    markDownLeft(i_CurrentRow+1, i_CurrentCol-1);
+                }
+            }
 
             // If not:
             if(m_GameButtons[i_CurrentRow, i_CurrentCol].Text == "X") // Player 1
@@ -113,7 +131,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 markUpRight(i_CurrentRow, i_CurrentCol);
             }
             else if (m_GameButtons[i_CurrentRow, i_CurrentCol].Text == "O") // Player 2
-            {
+            { 
                 markDownLeft(i_CurrentRow, i_CurrentCol);
                 markDownRight(i_CurrentRow, i_CurrentCol);
             }
@@ -233,16 +251,17 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     if ((i < (m_GameSize / 2) - 1) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "O";
-                        m_Player1CoinSet[coinsCount1++] = m_GameButtons[i, j];
+                        m_Player2CoinSet[coinsCount2++] = m_GameButtons[i, j];
 
                     }
 
                     else if (i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "X";
-                        m_Player2CoinSet[coinsCount2++] = m_GameButtons[i, j];                     
+                        m_Player1CoinSet[coinsCount1++] = m_GameButtons[i, j];                     
                     }
 
+                    m_GameButtons[i, j].m_PositionOnBoard = new Point(i, j);
                     Controls.Add(m_GameButtons[i, j]);
                     int copyOfI = i, copyOfJ = j;
                     m_GameButtons[i, j].Click += (sender, e) => buttonClicked(copyOfI, copyOfJ);
@@ -293,38 +312,41 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         {
             int x = i_Coin.m_PositionOnBoard.X, y = i_Coin.m_PositionOnBoard.Y;
 
-            if (x < m_GameSize - 2 && x > 1 && y < m_GameSize - 2 && y > 1)
-            {
-                if (i_Coin.Text == "X" /*|| is king*/)
-                {
-                    if (m_GameButtons[y - 1, x + 1].Text == "Y" && m_GameButtons[y - 2, x + 2].Text == null)
-                    {
-                        m_EatingIsPossible = true;
-                        i_Coin.m_CanEatToTheRight = true;
-                    }
+           // if (x < m_GameSize - 2 && x > 1 && y < m_GameSize - 2 && y > 1)
+          //  {
+          if(i_Coin.Text == "X" /*|| is king*/)
+          {
+              if(y >= 2 && x < m_GameSize - 2 && m_GameButtons[y - 1, x + 1].Text == "O"
+                 && m_GameButtons[y - 2, x + 2].Text == "")
+              {
+                  m_EatingIsPossible = true;
+                  i_Coin.m_CanEatUpRight = true;
+              }
 
-                    if (m_GameButtons[y - 1, x - 1].Text == "Y" && m_GameButtons[y - 2, x - 2].Text == null)
-                    {
-                        m_EatingIsPossible = true;
-                        i_Coin.m_canEatToTheLeft = true;
-                    }
-                }
+              if(y >= 2 && x >= 2 && m_GameButtons[y - 1, x - 1].Text == "O" && m_GameButtons[y - 2, x - 2].Text == "")
+              {
+                  m_EatingIsPossible = true;
+                  i_Coin.m_CanEatUpLeft = true;
+              }
+          }
 
-                else if (i_Coin.Text == "Y" /*|| is king*/)
-                {
-                    if (m_GameButtons[y + 1, x - 1].Text == "Y" && m_GameButtons[y + 2, x - 2].Text == null)
-                    {
-                        m_EatingIsPossible = true;
-                        i_Coin.m_CanEatToTheRight = true;
-                    }
+          else if(i_Coin.Text == "O" /*|| is king*/)
+          {
+              if(y < m_GameSize - 2 && x >= 2 && m_GameButtons[y + 1, x - 1].Text == "X"
+                 && m_GameButtons[y + 2, x - 2].Text == "")
+              {
+                  m_EatingIsPossible = true;
+                  i_Coin.m_CanEatDownRight = true;
+              }
 
-                    if (m_GameButtons[y + 1, x + 1].Text == "Y" && m_GameButtons[y + 2, x + 2].Text == null)
-                    {
-                        m_EatingIsPossible = true;
-                        i_Coin.m_canEatToTheLeft = true;
-                    }
-                }
-            }
+              if(y < m_GameSize - 2 && x < m_GameSize - 2 && m_GameButtons[y + 1, x + 1].Text == "X"
+                 && m_GameButtons[y + 2, x + 2].Text == "")
+              {
+                  m_EatingIsPossible = true;
+                  i_Coin.m_CanEatDownLeft = true;
+              }
+          }
+          //   }
         }
 
 

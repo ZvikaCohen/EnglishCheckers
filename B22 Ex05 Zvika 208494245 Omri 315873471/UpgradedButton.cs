@@ -13,7 +13,10 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         public Point[,] m_PossibleEatingPoints;
 
-        public bool m_CanEatToTheRight = false, m_canEatToTheLeft = false;
+        public bool m_CanEatUpRight = false;
+        public bool m_CanEatDownRight = false;
+        public bool m_CanEatUpLeft = false;
+        public bool m_CanEatDownLeft = false;
 
 
         public UpgradedButton(Point i_PointOnBoard)
