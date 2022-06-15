@@ -72,11 +72,12 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             else // Second button press
             {
-                if(stepIsValidAndPossible())
+                if(stepIsValidAndPossible(i_Row, i_Col))
                 {
-                    makeStep();
+                    makeStep(i_Row, i_Col);
                     changeTurn();
                 }
+
                 else
                 {
                     resetSteps();
@@ -89,14 +90,43 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             // If there is an eating possible, show only eating moves.
         }
 
+        private void checkEatingStepsForPlayerButtons()
+        {
+
+        }
+
+        private void showPossibleStepsFromCurrentCoin()
+        {
+
+        }
+
+        private bool stepIsValidAndPossible(int i_Row, int i_Col)
+        {
+            return true;
+        }
+
+        private void makeStep(int i_NewRow, int i_NewCol)
+        {
+            m_GameButtons[i_NewRow, i_NewCol].Text = m_CurrentPressedButton.Text;
+            m_CurrentPressedButton.Text = "";
+            resetSteps();
+
+        }
         private void markSelectedButton(int i_Row, int i_Col)
         {
-            if ((m_GameButtons[i_Row, i_Col].Text == "X" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
-                || (m_GameButtons[i_Row, i_Col].Text == "O" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2))
+            if(currentButtonPressedIsCurrentPlayer(i_Row, i_Col))
             {
                 m_CurrentPressedButton = m_GameButtons[i_Row, i_Col];
                 m_CurrentPressedButton.BackColor = Color.FromArgb(100, 200, 0);
             }
+        }
+
+        private bool currentButtonPressedIsCurrentPlayer(int i_Row, int i_Col)
+        {
+            bool answer = ((m_GameButtons[i_Row, i_Col].Text == "X" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
+                           || (m_GameButtons[i_Row, i_Col].Text == "O" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2));
+
+            return answer;
         }
 
         private void resetSteps()
