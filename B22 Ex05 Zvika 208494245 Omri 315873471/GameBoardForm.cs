@@ -212,17 +212,50 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         }
         private bool stepIsValidAndPossible(int i_Row, int i_Col)
         {
+            bool answer = false;
             UpgradedButton pressedButton = m_GameButtons[i_Row, i_Col];
-            bool answer = pressedButton.BackColor == m_ValidSpotColor ? true : false;
+            if(pressedButton.BackColor == m_ValidSpotColor)
+            {
+                answer = true;
+            }
+
             return answer;
         }
 
         private void makeStep(int i_NewRow, int i_NewCol)
         {
+            if(m_EatingIsPossible) // Make eating step
+            {
+                makeEatingStep(i_NewRow, i_NewCol);
+            }
+
             m_GameButtons[i_NewRow, i_NewCol].Text = m_CurrentPressedButton.Text;
             m_CurrentPressedButton.Text = "";
             resetSteps(i_NewRow, i_NewCol);
         }
+
+        private void makeEatingStep(int i_NewRow, int i_NewCol)
+        {
+            int oldRow = m_CurrentPressedButton.m_PositionOnBoard.X;
+            int oldCol = m_CurrentPressedButton.m_PositionOnBoard.Y;
+            if(oldRow - i_NewRow == 2 && oldCol - i_NewCol == 2) // UpLeft
+            {
+                m_GameButtons[oldRow - 1, oldCol - 1].Text = "";
+            }
+            if (oldRow - i_NewRow == 2 && oldCol - i_NewCol == -2) // UpRight
+            {
+                m_GameButtons[oldRow - 1, oldCol + 1].Text = "";
+            }
+            if (oldRow - i_NewRow == -2 && oldCol - i_NewCol == 2) // DownLeft
+            {
+                m_GameButtons[oldRow + 1, oldCol - 1].Text = "";
+            }
+            if (oldRow - i_NewRow == -2 && oldCol - i_NewCol == -2) // DownRight
+            {
+                m_GameButtons[oldRow + 1, oldCol + 1].Text = "";
+            }
+        }
+
         private void markSelectedButton(int i_Row, int i_Col)
         {
             if(currentButtonPressedIsCurrentPlayer(i_Row, i_Col))
@@ -243,7 +276,10 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void resetSteps(int i_Row, int i_Col)
         {
-            m_CurrentPressedButton.BackColor = default(Color);
+            if(m_CurrentPressedButton != null)
+            {
+                m_CurrentPressedButton.BackColor = default(Color);
+            }
             m_CurrentPressedButton = null;
             for (int i = 0; i < m_GameSize; i++)
             {
@@ -326,6 +362,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void checkAndUpdateWhoCanEatForCurrentPlayer()
         {
+            m_EatingIsPossible = false;
             if (m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
             {
                 foreach (UpgradedButton Coin in m_Player1CoinSet)
