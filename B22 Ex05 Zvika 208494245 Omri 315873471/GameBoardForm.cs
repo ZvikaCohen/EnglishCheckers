@@ -550,6 +550,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     if ((i < (m_GameSize / 2) - 1) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "O";
+                        m_Player2CoinSet.Add(m_GameButtons[i,j]);
                     }
 
                     else if (i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
@@ -714,8 +715,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         {
             int startingNumOfPlayer = m_GameSize/2 * m_GameSize-1;
 
-            m_Player1Points = startingNumOfPlayer - m_Player1CoinSet.Length;
-            m_Player2Points = startingNumOfPlayer - m_Player2CoinSet.Length;
+            m_Player1Points = startingNumOfPlayer - m_Player1CoinSet.Count;
+            m_Player2Points = startingNumOfPlayer - m_Player2CoinSet.Count;
         }
         
         private void changeTurn()
