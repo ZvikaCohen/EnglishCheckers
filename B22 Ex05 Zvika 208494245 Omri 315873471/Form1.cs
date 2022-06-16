@@ -80,7 +80,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void DoneButton_Click(object sender, EventArgs e)
         {
-            GameBoardForm gameBoard = new GameBoardForm(getGameSize(), PlayerOneNameTextBox.Text, PlayerTwoNameTextBox.Text);
+            bool playerTwoIsComputer = !PlayerTwoCheckBox.Checked;
+            GameBoardForm gameBoard = new GameBoardForm(getGameSize(), PlayerOneNameTextBox.Text, PlayerTwoNameTextBox.Text, playerTwoIsComputer);
             gameBoard.StartPosition = FormStartPosition.CenterScreen;
             gameBoard.ShowDialog();
         }

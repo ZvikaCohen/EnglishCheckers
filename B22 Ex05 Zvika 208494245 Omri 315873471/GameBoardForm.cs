@@ -20,13 +20,20 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private UpgradedButton[,] m_GameButtons;
         private List<UpgradedButton> m_Player1CoinSet = new List<UpgradedButton>();
         private List<UpgradedButton> m_Player2CoinSet = new List<UpgradedButton>();
+        private List<UpgradedButton> m_ComputerNextMoveButtons = new List<UpgradedButton>();
+        private bool m_ComputerIsSecondPlayer = false;
         private UpgradedButton m_CurrentPressedButton = null;
         private Label m_PlayerOne, m_PlayerTwo;
         private Color m_ValidSpotColor = Color.BurlyWood, m_CurrentPlayerColor = Color.BurlyWood;
         private bool m_EatingIsPossible = false;
 
-        public GameBoardForm(string i_GameSize, string i_PlayerOneName, string i_PlayerTwoName)
+        public GameBoardForm(
+            string i_GameSize,
+            string i_PlayerOneName,
+            string i_PlayerTwoName,
+            bool i_SecondPlayerIsComputer)
         {
+            m_ComputerIsSecondPlayer = i_SecondPlayerIsComputer;
             m_GameSize = getBoardSize(i_GameSize);
             setPlayersNames(i_PlayerOneName, i_PlayerTwoName);
             InitializeComponent();
@@ -35,25 +42,26 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private void setPlayersNames(string i_PlayerOneName, string i_PlayerTwoName)
         {
             m_PlayerOneName = i_PlayerOneName;
-            if (i_PlayerOneName == "")
+            if(i_PlayerOneName == "")
             {
                 m_PlayerOneName = "Player 1";
             }
 
             m_PlayerTwoName = i_PlayerTwoName;
-            if (i_PlayerTwoName == "")
+            if(i_PlayerTwoName == "")
             {
                 m_PlayerTwoName = "Player 2";
             }
 
         }
+
         private void GameBoardForm_Load(object sender, EventArgs e)
         {
             initLabels();
             Left = 80;
             Top = 100;
-            int newHeight = Top + m_GameSize*m_ButtonSize.Height;
-            int newWidth = Left + m_GameSize*m_ButtonSize.Width;
+            int newHeight = Top + m_GameSize * m_ButtonSize.Height;
+            int newWidth = Left + m_GameSize * m_ButtonSize.Width;
             Size = new Size(newWidth, newHeight);
             m_GameButtons = new UpgradedButton[m_GameSize, m_GameSize];
             initGameBoard();
@@ -61,14 +69,16 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void formatPlayersCoinsArrays()
         {
-            for(int i = m_Player1CoinSet.Count-1; i >= 0; i--)
+            for(int i = m_Player1CoinSet.Count - 1; i >= 0; i--)
             {
+                resetCoinPossibleEatingsAndMoves(m_Player1CoinSet[i]);
                 m_Player1CoinSet.Remove(m_Player1CoinSet[i]);
             }
-            
 
-            for (int i = m_Player2CoinSet.Count - 1; i >= 0 ; i--)
+
+            for(int i = m_Player2CoinSet.Count - 1; i >= 0; i--)
             {
+                resetCoinPossibleEatingsAndMoves(m_Player2CoinSet[i]);
                 m_Player2CoinSet.Remove(m_Player2CoinSet[i]);
             }
         }
@@ -80,24 +90,24 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 for(int j = 0; j < m_GameSize; j++)
                 {
-                    if (i == 0 && m_GameButtons[i,j].Text == "X")
+                    if(i == 0 && m_GameButtons[i, j].Text == "X")
                     {
                         m_GameButtons[i, j].Text = "K";
                     }
 
-                    if (i == m_GameSize-1 && m_GameButtons[i, j].Text == "O")
+                    if(i == m_GameSize - 1 && m_GameButtons[i, j].Text == "O")
                     {
                         m_GameButtons[i, j].Text = "U";
                     }
 
-                    if (m_GameButtons[i, j].Text == "X" || m_GameButtons[i, j].Text == "K")
+                    if(m_GameButtons[i, j].Text == "X" || m_GameButtons[i, j].Text == "K")
                     {
-                        m_Player1CoinSet.Add(m_GameButtons[i,j]);
+                        m_Player1CoinSet.Add(m_GameButtons[i, j]);
                     }
 
                     else if(m_GameButtons[i, j].Text == "O" || m_GameButtons[i, j].Text == "U")
                     {
-                        m_Player2CoinSet.Add(m_GameButtons[i,j]);
+                        m_Player2CoinSet.Add(m_GameButtons[i, j]);
                     }
                 }
             }
@@ -106,10 +116,9 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private void buttonClicked(int i_Row, int i_Col)
         {
             checkAndUpdateWhoCanEatForCurrentPlayer();
-            if (m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "") // First button press
+            if(m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "") // First button press
             {
                 markSelectedButton(i_Row, i_Col);
-              //  checkAndUpdateWhoCanEatForCurrentPlayer();
             }
 
             else if(m_GameButtons[i_Row, i_Col].Text != "") // Else if: There is already a button clicked.
@@ -120,24 +129,221 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             else // Second button press
             {
-                if(stepIsValidAndPossible(i_Row, i_Col)) 
+                if(stepIsValidAndPossible(i_Row, i_Col))
                 {
                     makeStep(i_Row, i_Col);
-                    changeTurn();
+                    if(!m_ComputerIsSecondPlayer)
+                    {
+                        changeTurn();
+                    }
                     checkAndUpdateWhoCanEatForCurrentPlayer();
                 }
 
                 else
                 {
                     resetSteps(i_Row, i_Col);
-                    markSelectedButton(i_Row,i_Col);
+                    markSelectedButton(i_Row, i_Col);
+                }
+
+                if(m_ComputerIsSecondPlayer)
+                {
+                    m_CurrentTurn = PlayersTurn.ePlayersTurn.Player2;
+                    updatePlayerCoinsArrays();
+                    checkAndUpdateWhoCanEatForCurrentPlayer();
+                    makeComputerMove();
+                    changeTurn();
                 }
             }
+
             updatePlayerCoinsArrays();
-            // button clicked. If it's nothing - don't do anything.
-            // If it's someone, check if it's his turn. If yes, mark it.
-            // Show possible steps from this coin.
-            // If there is an eating possible, show only eating moves.
+        }
+
+        private void makeComputerMove()
+        {
+            Random rnd = new Random();
+            UpgradedButton buttonToMove = null;
+            int newRow = 0, newCol = 0;
+            int randomCoinIndex = 0;
+            if(m_EatingIsPossible)
+            {
+                updateComputerEatingsArray();
+                randomCoinIndex = rnd.Next(0, m_ComputerNextMoveButtons.Count);
+            }
+
+            else
+            {
+                updateComputerPossibleSteps();
+                randomCoinIndex = rnd.Next(0, m_ComputerNextMoveButtons.Count);
+            }
+
+            buttonToMove = m_ComputerNextMoveButtons[randomCoinIndex];
+            getNewRowAndColForComputer(buttonToMove, out newRow, out newCol);
+
+            if(m_EatingIsPossible)
+            {
+                makeEatingStep(buttonToMove, newRow, newCol);
+            }
+            m_GameButtons[newRow, newCol].Text = buttonToMove.Text;
+            buttonToMove.Text = "";
+            resetSteps(newRow, newCol);
+
+        }
+
+        private void getNewRowAndColForComputer(UpgradedButton i_Button, out int o_NewRow, out int o_NewCol)
+        {
+            o_NewRow = o_NewCol = 0;
+            // int possibleStepsCounter = getPossibleStepsCounter(i_Button);
+            List<Direction.eDirection> directionsList = new List<Direction.eDirection>();
+            fillDirectionsListAndGetNewRowAndCol(i_Button, ref directionsList, out o_NewRow, out o_NewCol);
+        }
+
+        private void fillDirectionsListAndGetNewRowAndCol(
+            UpgradedButton i_Button,
+            ref List<Direction.eDirection> i_ListOfDirections,
+            out int o_NewRow,
+            out int o_NewCol)
+        {
+            Random rnd = new Random();
+            int randomIndex = 0, eatCounter = 0;
+            o_NewRow = o_NewCol = 0;
+            foreach(UpgradedButton Coin in m_ComputerNextMoveButtons)
+            {
+                if(Coin.m_CanEatDownLeft)
+                {
+                    eatCounter++;
+                    i_ListOfDirections.Add(Direction.eDirection.DownLeft);
+                }
+
+                if(Coin.m_CanEatDownRight)
+                {
+                    eatCounter++;
+                    i_ListOfDirections.Add(Direction.eDirection.DownRight);
+                }
+
+                if(Coin.m_CanEatUpLeft)
+                {
+                    eatCounter++;
+                    i_ListOfDirections.Add(Direction.eDirection.UpLeft);
+                }
+
+                if(Coin.m_CanEatUpRight)
+                {
+                    eatCounter++;
+                    i_ListOfDirections.Add(Direction.eDirection.UpRight);
+                }
+
+                if(Coin.m_CanMoveDownLeft)
+                {
+                    i_ListOfDirections.Add(Direction.eDirection.DownLeft);
+                }
+
+                if(Coin.m_CanMoveDownRight)
+                {
+                    i_ListOfDirections.Add(Direction.eDirection.DownRight);
+                }
+
+                if(Coin.m_CanMoveUpLeft)
+                {
+                    i_ListOfDirections.Add(Direction.eDirection.UpLeft);
+                }
+
+                if(Coin.m_CanMoveUpRight)
+                {
+                    i_ListOfDirections.Add(Direction.eDirection.UpRight);
+                }
+            }
+
+            if(m_EatingIsPossible)
+            {
+                randomIndex = rnd.Next(0, eatCounter);
+            }
+
+            else
+            {
+                randomIndex = rnd.Next(0, i_ListOfDirections.Count);
+            }
+
+            translateDirectionToRowAndCol(
+                i_ListOfDirections[randomIndex],
+                m_EatingIsPossible,
+                i_Button,
+                out o_NewRow,
+                out o_NewCol);
+        }
+
+        private void translateDirectionToRowAndCol(
+            Direction.eDirection i_Direction,
+            bool i_EatingStep,
+            UpgradedButton i_Button,
+            out int o_NewRow,
+            out int o_NewCol)
+        {
+            o_NewRow = o_NewCol = 0;
+            int oldRow = i_Button.m_PositionOnBoard.X;
+            int oldCol = i_Button.m_PositionOnBoard.Y;
+            int difference = m_EatingIsPossible ? 2 : 1;
+            switch(i_Direction)
+            {
+                case Direction.eDirection.DownLeft:
+                    {
+                        o_NewRow = oldRow + difference;
+                        o_NewCol = oldCol - difference;
+                        break;
+                    }
+                case Direction.eDirection.DownRight:
+                    {
+                        o_NewRow = oldRow + difference;
+                        o_NewCol = oldCol + difference;
+                        break;
+                    }
+                case Direction.eDirection.UpLeft:
+                    {
+                        o_NewRow = oldRow - difference;
+                        o_NewCol = oldCol - difference;
+                        break;
+                    }
+                case Direction.eDirection.UpRight:
+                    {
+                        o_NewRow = oldRow - difference;
+                        o_NewCol = oldCol + difference;
+                        break;
+                    }
+            }
+        }
+
+        private void updateComputerEatingsArray()
+        {
+            for(int i = m_ComputerNextMoveButtons.Count - 1; i >= 0; i--) // First, reset the old array.
+            {
+                m_ComputerNextMoveButtons.Remove(m_ComputerNextMoveButtons[i]);
+            }
+
+            foreach(UpgradedButton Coin in m_Player2CoinSet)
+            {
+                if(Coin.m_CanEatDownLeft || Coin.m_CanEatDownRight || Coin.m_CanEatUpLeft || Coin.m_CanEatUpRight)
+                {
+                    m_ComputerNextMoveButtons.Add(Coin);
+                }
+            }
+        }
+
+        private void updateComputerPossibleSteps()
+        {
+            for (int i = m_ComputerNextMoveButtons.Count - 1; i >= 0; i--) // First, reset the old array.
+            {
+                m_ComputerNextMoveButtons.Remove(m_ComputerNextMoveButtons[i]);
+            }
+
+            checkAndUpdateWhoCanMove();
+
+            foreach (UpgradedButton Coin in m_Player2CoinSet)
+            {
+                if (Coin.m_CanMoveDownLeft || Coin.m_CanMoveDownRight || Coin.m_CanMoveUpLeft || Coin.m_CanMoveUpRight)
+                {
+                    m_ComputerNextMoveButtons.Add(Coin);
+                }
+            }
+
         }
 
         private void showPossibleStepsFromCurrentCoin(int i_CurrentRow, int i_CurrentCol)
@@ -235,7 +441,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         {
             if(m_EatingIsPossible) // Make eating step
             {
-                makeEatingStep(i_NewRow, i_NewCol);
+                makeEatingStep(m_CurrentPressedButton, i_NewRow, i_NewCol);
             }
 
             m_GameButtons[i_NewRow, i_NewCol].Text = m_CurrentPressedButton.Text;
@@ -243,10 +449,21 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             resetSteps(i_NewRow, i_NewCol);
         }
 
-        private void makeEatingStep(int i_NewRow, int i_NewCol)
+        private void makeEatingStep(UpgradedButton i_Button, int i_NewRow, int i_NewCol)
         {
-            int oldRow = m_CurrentPressedButton.m_PositionOnBoard.X;
-            int oldCol = m_CurrentPressedButton.m_PositionOnBoard.Y;
+            int oldRow = 0, oldCol = 0;
+            if(m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2 && m_ComputerIsSecondPlayer)
+            {
+                oldRow = i_Button.m_PositionOnBoard.X;
+                oldCol = i_Button.m_PositionOnBoard.Y;
+            }
+
+            else
+            {
+                oldRow = m_CurrentPressedButton.m_PositionOnBoard.X;
+                oldCol = m_CurrentPressedButton.m_PositionOnBoard.Y;
+            }
+
             if(oldRow - i_NewRow == 2 && oldCol - i_NewCol == 2) // UpLeft
             {
                 m_GameButtons[oldRow - 1, oldCol - 1].Text = "";
@@ -285,11 +502,11 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void resetSteps(int i_Row, int i_Col)
         {
-            if(m_CurrentPressedButton != null)
-            {
+           // if(m_CurrentPressedButton != null)
+          //  {
                 m_CurrentPressedButton.BackColor = default(Color);
-            }
-            m_CurrentPressedButton = null;
+          //  }
+           // m_CurrentPressedButton = null;
             for (int i = 0; i < m_GameSize; i++)
             {
                 for (int j = 0; j < m_GameSize; j++)
@@ -306,10 +523,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private void initGameBoard()
         {
             int left, top = (Top/2 - m_GameSize), coinsCount1=0, coinsCount2=0;
-
-            //m_Player1CoinSet.Capacity = (m_GameSize / 2) * (m_GameSize / 2 - 1);
-           // m_Player2CoinSet.Capacity = (m_GameSize / 2) * (m_GameSize / 2 - 1);
-
             for (int i = 0; i < m_GameSize; i++)
             {
                 left = Left/2 - (m_GameSize-1);
@@ -323,6 +536,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     {
                         m_GameButtons[i, j].Enabled = false;
                     }
+
                     else
                     {
                         m_GameButtons[i, j].BackColor = default(Color);
@@ -331,13 +545,11 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     if ((i < (m_GameSize / 2) - 1) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "O";
-                       // m_Player2CoinSet.Add(m_GameButtons[i, j]);
                     }
 
                     else if (i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "X";
-                      //  m_Player1CoinSet.Add(m_GameButtons[i, j]);
                     }
 
                     m_GameButtons[i, j].m_PositionOnBoard = new Point(i, j);
@@ -369,12 +581,17 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_PlayerOne.BackColor = m_CurrentPlayerColor;
         }
 
-        private void resetCoinPossibleEatings(UpgradedButton i_Button)
+        private void resetCoinPossibleEatingsAndMoves(UpgradedButton i_Button)
         {
             i_Button.m_CanEatDownLeft = false;
             i_Button.m_CanEatDownRight = false;
             i_Button.m_CanEatUpLeft = false;
             i_Button.m_CanEatUpRight = false;
+
+            i_Button.m_CanMoveUpRight = false;
+            i_Button.m_CanMoveUpLeft = false;
+            i_Button.m_CanMoveDownLeft = false;
+            i_Button.m_CanMoveDownRight = false;
         }
         private void checkAndUpdateWhoCanEatForCurrentPlayer()
         {
@@ -383,7 +600,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player1CoinSet)
                 {
-                    resetCoinPossibleEatings(Coin);
+                    resetCoinPossibleEatingsAndMoves(Coin);
                     canCoinEat(Coin);
                 }
             }
@@ -391,9 +608,18 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player2CoinSet)
                 {
-                    resetCoinPossibleEatings(Coin);
+                    resetCoinPossibleEatingsAndMoves(Coin);
                     canCoinEat(Coin);
                 }
+            }
+        }
+
+        private void checkAndUpdateWhoCanMove()
+        {
+            foreach(UpgradedButton Coin in m_Player2CoinSet)
+            {
+                resetCoinPossibleEatingsAndMoves(Coin);
+                canCoinMove(Coin);
             }
         }
 
@@ -477,9 +703,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             return answer;
         }
 
-
-
-
         private void changeTurn()
         {
             m_CurrentTurn = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1
@@ -515,5 +738,35 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             return size;
         }
+
+        private void canCoinMove(UpgradedButton i_Coin)
+        {
+            int coinRow = i_Coin.m_PositionOnBoard.X, coinCol = i_Coin.m_PositionOnBoard.Y;
+            if (i_Coin.Text == "U")
+            {
+                if (coinRow >= 1 && coinCol < m_GameSize - 1 && m_GameButtons[coinRow - 1, coinCol + 1].Text == "")
+                {
+                    i_Coin.m_CanMoveUpRight = true;
+                }
+
+                if (coinRow >= 1 && coinCol >= 1 && m_GameButtons[coinRow - 1, coinCol - 1].Text == "")
+                {
+                    i_Coin.m_CanMoveUpLeft = true;
+                }
+            }
+
+            if (coinRow < m_GameSize - 1 && coinCol < m_GameSize - 1 && m_GameButtons[coinRow + 1, coinCol + 1].Text == "")
+            {
+                i_Coin.m_CanMoveDownRight = true;
+            }
+
+            if (coinRow < m_GameSize - 1 && coinCol >= 1 && m_GameButtons[coinRow + 1, coinCol - 1].Text == "")
+            {
+                i_Coin.m_CanMoveDownLeft = true;
+            }
+
+
+        }
+
     }
 }
