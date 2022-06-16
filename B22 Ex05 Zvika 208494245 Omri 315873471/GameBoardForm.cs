@@ -80,12 +80,22 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 for(int j = 0; j < m_GameSize; j++)
                 {
-                    if (m_GameButtons[i, j].Text == "X")
+                    if (i == 0 && m_GameButtons[i,j].Text == "X")
+                    {
+                        m_GameButtons[i, j].Text = "K";
+                    }
+
+                    if (i == m_GameSize-1 && m_GameButtons[i, j].Text == "O")
+                    {
+                        m_GameButtons[i, j].Text = "U";
+                    }
+
+                    if (m_GameButtons[i, j].Text == "X" || m_GameButtons[i, j].Text == "K")
                     {
                         m_Player1CoinSet.Add(m_GameButtons[i,j]);
                     }
 
-                    else if(m_GameButtons[i, j].Text == "O")
+                    else if(m_GameButtons[i, j].Text == "O" || m_GameButtons[i, j].Text == "U")
                     {
                         m_Player2CoinSet.Add(m_GameButtons[i,j]);
                     }
@@ -95,7 +105,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void buttonClicked(int i_Row, int i_Col)
         {
-            updatePlayerCoinsArrays();
             checkAndUpdateWhoCanEatForCurrentPlayer();
             if (m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "") // First button press
             {
@@ -124,7 +133,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     markSelectedButton(i_Row,i_Col);
                 }
             }
-
+            updatePlayerCoinsArrays();
             // button clicked. If it's nothing - don't do anything.
             // If it's someone, check if it's his turn. If yes, mark it.
             // Show possible steps from this coin.
@@ -268,8 +277,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private bool currentButtonPressedIsCurrentPlayer(int i_Row, int i_Col)
         {
-            bool answer = ((m_GameButtons[i_Row, i_Col].Text == "X" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
-                           || (m_GameButtons[i_Row, i_Col].Text == "O" && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2));
+            bool answer = (((m_GameButtons[i_Row, i_Col].Text == "X" || m_GameButtons[i_Row, i_Col].Text == "K") && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
+                           || ((m_GameButtons[i_Row, i_Col].Text == "O" || m_GameButtons[i_Row, i_Col].Text == "U") && m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2));
 
             return answer;
         }
@@ -360,6 +369,13 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_PlayerOne.BackColor = m_CurrentPlayerColor;
         }
 
+        private void resetCoinPossibleEatings(UpgradedButton i_Button)
+        {
+            i_Button.m_CanEatDownLeft = false;
+            i_Button.m_CanEatDownRight = false;
+            i_Button.m_CanEatUpLeft = false;
+            i_Button.m_CanEatUpRight = false;
+        }
         private void checkAndUpdateWhoCanEatForCurrentPlayer()
         {
             m_EatingIsPossible = false;
@@ -367,6 +383,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player1CoinSet)
                 {
+                    resetCoinPossibleEatings(Coin);
                     canCoinEat(Coin);
                 }
             }
@@ -374,6 +391,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player2CoinSet)
                 {
+                    resetCoinPossibleEatings(Coin);
                     canCoinEat(Coin);
                 }
             }
@@ -381,44 +399,85 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void canCoinEat(UpgradedButton i_Coin)
         {
-            int x = i_Coin.m_PositionOnBoard.X, y = i_Coin.m_PositionOnBoard.Y;
+            int coinRow = i_Coin.m_PositionOnBoard.X, coinCol = i_Coin.m_PositionOnBoard.Y;
+            if(i_Coin.Text == "X" || i_Coin.Text == "K" || i_Coin.Text == "U")
+            {
+                if(coinRow >= 2 && coinCol < m_GameSize - 2
+                                && checkIfNextPositionIsEnemy(i_Coin, coinRow - 1, coinCol + 1)
+                                && m_GameButtons[coinRow - 2, coinCol + 2].Text == "")
+                {
+                    m_EatingIsPossible = true;
+                    i_Coin.m_CanEatUpRight = true;
+                }
 
-           // if (x < m_GameSize - 2 && x > 1 && y < m_GameSize - 2 && y > 1)
-          //  {
-          if(i_Coin.Text == "X" /*|| is king*/)
-          {
-              if(x >= 2 && y < m_GameSize - 2 && m_GameButtons[x-1, y+1].Text == "O"
-                 && m_GameButtons[x-2, y+2].Text == "")
-              {
-                  m_EatingIsPossible = true;
-                  i_Coin.m_CanEatUpRight = true;
-              }
+                if(coinRow >= 2 && coinCol >= 2 && checkIfNextPositionIsEnemy(i_Coin, coinRow - 1, coinCol - 1)
+                   && m_GameButtons[coinRow - 2, coinCol - 2].Text == "")
+                {
+                    m_EatingIsPossible = true;
+                    i_Coin.m_CanEatUpLeft = true;
+                }
+            }
 
-              if(x >= 2 && y >= 2 && m_GameButtons[x-1,y-1].Text == "O" && m_GameButtons[x-2,y-2].Text == "")
-              {
-                  m_EatingIsPossible = true;
-                  i_Coin.m_CanEatUpLeft = true;
-              }
-          }
+            if(i_Coin.Text == "O" || i_Coin.Text == "U" || i_Coin.Text == "K")
+            {
+                if(coinRow < m_GameSize - 2 && coinCol < m_GameSize - 2
+                                            && checkIfNextPositionIsEnemy(i_Coin, coinRow + 1, coinCol + 1)
+                                            && m_GameButtons[coinRow + 2, coinCol + 2].Text == "")
+                {
+                    m_EatingIsPossible = true;
+                    i_Coin.m_CanEatDownRight = true;
+                }
 
-          else if(i_Coin.Text == "O" /*|| is king*/)
-          {
-              if(x < m_GameSize - 2 && y < m_GameSize - 2 && m_GameButtons[x + 1, y + 1].Text == "X"
-                 && m_GameButtons[x + 2, y + 2].Text == "")
-              {
-                  m_EatingIsPossible = true;
-                  i_Coin.m_CanEatDownRight = true;
-              }
-
-              if(x < m_GameSize - 2 && y >= 2 && m_GameButtons[x + 1, y - 1].Text == "X"
-                 && m_GameButtons[x + 2, y - 2].Text == "")
-              {
-                  m_EatingIsPossible = true;
-                  i_Coin.m_CanEatDownLeft = true;
-              }
-          }
-          //   }
+                if (coinRow < m_GameSize - 2 && coinCol >= 2 && checkIfNextPositionIsEnemy(i_Coin, coinRow+1, coinCol-1) && m_GameButtons[coinRow + 2, coinCol - 2].Text == "")
+                {
+                    m_EatingIsPossible = true;
+                    i_Coin.m_CanEatDownLeft = true;
+                }
+            }
         }
+
+        private bool checkIfNextPositionIsEnemy(UpgradedButton i_CurrentButton, int i_NewRow, int i_NewCol)
+        {
+            bool answer = false;
+            string oppositePlayer = "", oppositePlayerKing = "";
+            switch(i_CurrentButton.Text)
+            {
+                case "X":
+                    {
+                        oppositePlayer = "O";
+                        oppositePlayerKing = "U";
+                        break;
+                    }
+                case "K":
+                    {
+                        oppositePlayer = "O";
+                        oppositePlayerKing = "U";
+                        break;
+                    }
+                case "O":
+                    {
+                        oppositePlayer = "X";
+                        oppositePlayerKing = "K";
+                        break;
+                    }
+                case "U":
+                    {
+                        oppositePlayer = "X";
+                        oppositePlayerKing = "K";
+                        break;
+                    }
+            }
+
+            if(m_GameButtons[i_NewRow, i_NewCol].Text == oppositePlayer
+               || m_GameButtons[i_NewRow, i_NewCol].Text == oppositePlayerKing)
+            {
+                answer = true;
+            }
+
+            return answer;
+        }
+
+
 
 
         private void changeTurn()
