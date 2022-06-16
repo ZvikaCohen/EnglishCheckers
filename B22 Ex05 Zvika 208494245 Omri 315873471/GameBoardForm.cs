@@ -16,7 +16,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private int m_GameSize;
         private string m_PlayerOneName, m_PlayerTwoName;
         private int m_PlayerOneCoinsCount, m_PlayerTwoCoinsCount;
-        private int m_PlayerOnePoints = 0, m_PlayerTwoPoints = 0;
+        private int m_Player1Points = 0, m_Player2Points = 0;
         private UpgradedButton[,] m_GameButtons;
         private List<UpgradedButton> m_Player1CoinSet = new List<UpgradedButton>();
         private List<UpgradedButton> m_Player2CoinSet = new List<UpgradedButton>();
@@ -52,8 +52,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             initLabels();
             Left = 80;
             Top = 100;
-            int newHeight = Top + m_GameSize*m_ButtonSize.Height;
-            int newWidth = Left + m_GameSize*m_ButtonSize.Width;
+            int newHeight = Top + m_GameSize * m_ButtonSize.Height;
+            int newWidth = Left + m_GameSize * m_ButtonSize.Width;
             Size = new Size(newWidth, newHeight);
             m_GameButtons = new UpgradedButton[m_GameSize, m_GameSize];
             initGameBoard();
@@ -105,14 +105,19 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void buttonClicked(int i_Row, int i_Col)
         {
+
+            countPoints();
+
+
             checkAndUpdateWhoCanEatForCurrentPlayer();
+
             if (m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "") // First button press
             {
                 markSelectedButton(i_Row, i_Col);
               //  checkAndUpdateWhoCanEatForCurrentPlayer();
             }
 
-            else if(m_GameButtons[i_Row, i_Col].Text != "") // Else if: There is already a button clicked.
+            else if (m_GameButtons[i_Row, i_Col].Text != "") // Else if: There is already a button clicked.
             {
                 resetSteps(i_Row, i_Col);
                 markSelectedButton(i_Row, i_Col);
@@ -120,7 +125,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             else // Second button press
             {
-                if(stepIsValidAndPossible(i_Row, i_Col)) 
+                if (stepIsValidAndPossible(i_Row, i_Col))
                 {
                     makeStep(i_Row, i_Col);
                     changeTurn();
@@ -267,7 +272,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void markSelectedButton(int i_Row, int i_Col)
         {
-            if(currentButtonPressedIsCurrentPlayer(i_Row, i_Col))
+            if (currentButtonPressedIsCurrentPlayer(i_Row, i_Col))
             {
                 m_CurrentPressedButton = m_GameButtons[i_Row, i_Col];
                 m_CurrentPressedButton.BackColor = Color.FromArgb(100, 200, 0);
@@ -305,17 +310,17 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void initGameBoard()
         {
-            int left, top = (Top/2 - m_GameSize), coinsCount1=0, coinsCount2=0;
+            int left, top = (Top / 2 - m_GameSize), coinsCount1 = 0, coinsCount2 = 0;
 
             //m_Player1CoinSet.Capacity = (m_GameSize / 2) * (m_GameSize / 2 - 1);
            // m_Player2CoinSet.Capacity = (m_GameSize / 2) * (m_GameSize / 2 - 1);
 
             for (int i = 0; i < m_GameSize; i++)
             {
-                left = Left/2 - (m_GameSize-1);
+                left = Left / 2 - (m_GameSize - 1);
                 for (int j = 0; j < m_GameSize; j++)
                 {
-                    m_GameButtons[i, j] = new UpgradedButton(new Point(i,j));
+                    m_GameButtons[i, j] = new UpgradedButton(new Point(i, j));
                     m_GameButtons[i, j].Location = new Point(left, top);
                     m_GameButtons[i, j].Size = m_ButtonSize;
                     left += m_ButtonSize.Width;
@@ -337,7 +342,11 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     else if (i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
                     {
                         m_GameButtons[i, j].Text = "X";
-                      //  m_Player1CoinSet.Add(m_GameButtons[i, j]);
+
+                       /* m_Player2CoinSet[coinsCount2++] = m_GameButtons[i, j];*/
+
+                        m_Player1CoinSet.Add(m_GameButtons[i, j]);
+
                     }
 
                     m_GameButtons[i, j].m_PositionOnBoard = new Point(i, j);
@@ -353,10 +362,10 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         {
             m_PlayerOne = new Label();
             m_PlayerTwo = new Label();
-            m_PlayerOne.Text = m_PlayerOneName + ":" + m_PlayerOnePoints;
-            m_PlayerTwo.Text = m_PlayerTwoName + ":" + m_PlayerTwoPoints;
-            int playerTwoLabelLeftMargin = m_GameSize * m_ButtonSize.Width - 2* m_PlayerTwo.Text.Length - Left / 10;
-            Point playerOnePoint = new Point(Left/10, 15);
+            m_PlayerOne.Text = m_PlayerOneName + ":" + m_Player1Points;
+            m_PlayerTwo.Text = m_PlayerTwoName + ":" + m_Player2Points;
+            int playerTwoLabelLeftMargin = m_GameSize * m_ButtonSize.Width - 2 * m_PlayerTwo.Text.Length - Left / 10;
+            Point playerOnePoint = new Point(Left / 10, 15);
             Point playerTwoPoint = new Point(playerTwoLabelLeftMargin, 15);
             m_PlayerOne.Location = playerOnePoint;
             m_PlayerTwo.Location = playerTwoPoint;
@@ -477,6 +486,14 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             return answer;
         }
 
+        private void countPoints()
+        {
+            int startingNumOfPlayer = m_GameSize/2 * m_GameSize-1;
+
+            m_Player1Points = startingNumOfPlayer - m_Player1CoinSet.Length;
+            m_Player2Points = startingNumOfPlayer - m_Player2CoinSet.Length;
+        }
+
 
 
 
@@ -488,6 +505,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_PlayerOne.BackColor = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1 ? m_CurrentPlayerColor : default;
             m_PlayerTwo.BackColor = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player2 ? m_CurrentPlayerColor : default;
         }
+        
         private int getBoardSize(string i_BoardSize)
         {
             int size = 0;
