@@ -18,6 +18,10 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         public bool m_CanEatUpLeft = false;
         public bool m_CanEatDownLeft = false;
 
+        public bool m_CanMoveUpRight = false;
+        public bool m_CanMoveDownRight = false;
+        public bool m_CanMoveUpLeft = false;
+        public bool m_CanMoveDownLeft = false;
 
         public UpgradedButton(Point i_PointOnBoard)
         {
