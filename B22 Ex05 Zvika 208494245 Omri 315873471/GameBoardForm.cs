@@ -11,21 +11,24 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 {
     public partial class GameBoardForm : Form
     {
-        private PlayersTurn.ePlayersTurn m_CurrentTurn = PlayersTurn.ePlayersTurn.Player1;
-        private Size m_ButtonSize = new Size(40, 40);
-        private int m_GameSize;
-        private string m_PlayerOneName, m_PlayerTwoName;
-        private int m_PlayerOneCoinsCount, m_PlayerTwoCoinsCount;
-        private int m_Player1Points = 0, m_Player2Points = 0;
-        private UpgradedButton[,] m_GameButtons;
         private List<UpgradedButton> m_Player1CoinSet = new List<UpgradedButton>();
         private List<UpgradedButton> m_Player2CoinSet = new List<UpgradedButton>();
         private List<UpgradedButton> m_ComputerNextMoveButtons = new List<UpgradedButton>();
-        private bool m_ComputerIsSecondPlayer = false;
+        private UpgradedButton[,] m_GameButtons;
         private UpgradedButton m_CurrentPressedButton = null;
+        private UpgradedButton m_SecondEatingButton = null;
+        private PlayersTurn.ePlayersTurn m_CurrentTurn = PlayersTurn.ePlayersTurn.Player1;
         private Label m_PlayerOne, m_PlayerTwo;
         private Color m_ValidSpotColor = Color.BurlyWood, m_CurrentPlayerColor = Color.BurlyWood;
+        private Size m_ButtonSize = new Size(40, 40);
         private bool m_EatingIsPossible = false;
+        private bool m_SecondEatingStep = false;
+        private bool m_ComputerIsSecondPlayer = false;
+        private int m_GameSize;
+        private int m_PlayerOneCoinsCount, m_PlayerTwoCoinsCount;
+        private int m_Player1Points = 0, m_Player2Points = 0;
+        private string m_PlayerOneName, m_PlayerTwoName;
+
 
         public GameBoardForm(
             string i_GameSize,
@@ -115,12 +118,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void buttonClicked(int i_Row, int i_Col)
         {
-
             countPoints();
-
-
             checkAndUpdateWhoCanEatForCurrentPlayer();
-
             if (m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "") // First button press
             {
                 markSelectedButton(i_Row, i_Col);
@@ -137,10 +136,20 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 if (stepIsValidAndPossible(i_Row, i_Col))
                 {
                     makeStep(i_Row, i_Col);
-                    if(m_ComputerIsSecondPlayer)
+                    if(!m_SecondEatingStep)
                     {
                         changeTurn();
                     }
+                    else
+                    {
+                        int secondEatRow = 0, secondEatCol = 0;
+                        m_SecondEatingStep = false;
+                        checkAndUpdateWhoCanEatForCurrentPlayer();
+                        markSelectedButton(i_Row, i_Col);
+                        showPossibleStepsFromCurrentCoin(i_Row,i_Col);
+                        m_SecondEatingButton = m_GameButtons[i_Row, i_Col];
+                    }
+
                     checkAndUpdateWhoCanEatForCurrentPlayer();
                 }
 
@@ -161,6 +170,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
 
             updatePlayerCoinsArrays();
+            // checkIfPlayerOutOfMoves();
         }
 
         private void makeComputerMove()
@@ -398,7 +408,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void markUpLeft(int i_Row, int i_Col)
         {
-            if(i_Row - 1 > 0 && i_Col - 1 >= 0 && m_GameButtons[i_Row-1, i_Col-1].Text == "")
+            if(i_Row - 1 >= 0 && i_Col - 1 >= 0 && m_GameButtons[i_Row-1, i_Col-1].Text == "")
             {
                 m_GameButtons[i_Row - 1, i_Col - 1].BackColor = m_ValidSpotColor;
             }
@@ -431,7 +441,14 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         {
             bool answer = false;
             UpgradedButton pressedButton = m_GameButtons[i_Row, i_Col];
-            if(pressedButton.BackColor == m_ValidSpotColor)
+            if(m_SecondEatingStep)
+            {
+                if (pressedButton.m_PositionOnBoard == m_SecondEatingButton.m_PositionOnBoard)
+                {
+                    answer = true;
+                }
+            }
+            else if(pressedButton.BackColor == m_ValidSpotColor)
             {
                 answer = true;
             }
@@ -448,6 +465,18 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             m_GameButtons[i_NewRow, i_NewCol].Text = m_CurrentPressedButton.Text;
             m_CurrentPressedButton.Text = "";
+            if(m_EatingIsPossible)
+            {
+                updatePlayerCoinsArrays();
+                checkAndUpdateWhoCanEatForCurrentPlayer();
+                if (m_GameButtons[i_NewRow, i_NewCol].m_CanEatDownLeft || m_GameButtons[i_NewRow, i_NewCol].m_CanEatDownRight
+                                                                       || m_GameButtons[i_NewRow, i_NewCol].m_CanEatUpLeft
+                                                                       || m_GameButtons[i_NewRow, i_NewCol].m_CanEatUpRight)
+                {
+                    m_SecondEatingStep = true;
+                }
+            }
+            
             resetSteps(i_NewRow, i_NewCol);
         }
 
