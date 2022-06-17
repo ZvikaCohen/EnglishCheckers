@@ -22,12 +22,22 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         public bool m_CanMoveDownRight = false;
         public bool m_CanMoveUpLeft = false;
         public bool m_CanMoveDownLeft = false;
-
+        
         public UpgradedButton(Point i_PointOnBoard)
         {
             m_PositionOnBoard = i_PointOnBoard;
         }
 
+        public bool canMove
+        {
+            get
+            {
+                bool canMove = m_CanMoveUpRight || m_CanMoveDownRight || m_CanMoveUpLeft || m_CanMoveDownLeft;
+                bool canEat = m_CanEatDownLeft || m_CanEatUpLeft || m_CanEatDownRight || m_CanEatUpRight;
+                return (canEat || canMove);
+            }
+        }
+        
 
     }
 }

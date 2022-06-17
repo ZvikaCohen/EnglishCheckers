@@ -24,7 +24,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private int m_PlayerOneCoinsCount, m_PlayerTwoCoinsCount;
         private int m_Player1Points = 0, m_Player2Points = 0;
         private string m_PlayerOneName, m_PlayerTwoName;
-
+        private bool m_P1OutOfMoves = false, m_P2OutOfMoves = false, m_Tie = false;
+        private PlayersTurn.ePlayersTurn m_Winner;
 
         public GameBoardForm(
             string i_GameSize,
@@ -41,13 +42,13 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private void setPlayersNames(string i_PlayerOneName, string i_PlayerTwoName)
         {
             m_PlayerOneName = i_PlayerOneName;
-            if(i_PlayerOneName == "")
+            if (i_PlayerOneName == "")
             {
                 m_PlayerOneName = "Player 1";
             }
 
             m_PlayerTwoName = i_PlayerTwoName;
-            if(i_PlayerTwoName == "")
+            if (i_PlayerTwoName == "")
             {
                 m_PlayerTwoName = "Player 2";
             }
@@ -67,13 +68,13 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void formatPlayersCoinsArrays()
         {
-            for(int i = m_Player1CoinSet.Count - 1; i >= 0; i--)
+            for (int i = m_Player1CoinSet.Count - 1; i >= 0; i--)
             {
                 resetCoinPossibleEatingsAndMoves(m_Player1CoinSet[i]);
                 m_Player1CoinSet.Remove(m_Player1CoinSet[i]);
             }
 
-            for(int i = m_Player2CoinSet.Count - 1; i >= 0; i--)
+            for (int i = m_Player2CoinSet.Count - 1; i >= 0; i--)
             {
                 resetCoinPossibleEatingsAndMoves(m_Player2CoinSet[i]);
                 m_Player2CoinSet.Remove(m_Player2CoinSet[i]);
@@ -83,26 +84,26 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private void updatePlayerCoinsArrays()
         {
             formatPlayersCoinsArrays();
-            for(int i = 0; i < m_GameSize; i++)
+            for (int i = 0; i < m_GameSize; i++)
             {
-                for(int j = 0; j < m_GameSize; j++)
+                for (int j = 0; j < m_GameSize; j++)
                 {
-                    if(i == 0 && m_GameButtons[i, j].Text == "X")
+                    if (i == 0 && m_GameButtons[i, j].Text == "X")
                     {
                         m_GameButtons[i, j].Text = "K";
                     }
 
-                    if(i == m_GameSize - 1 && m_GameButtons[i, j].Text == "O")
+                    if (i == m_GameSize - 1 && m_GameButtons[i, j].Text == "O")
                     {
                         m_GameButtons[i, j].Text = "U";
                     }
 
-                    if(m_GameButtons[i, j].Text == "X" || m_GameButtons[i, j].Text == "K")
+                    if (m_GameButtons[i, j].Text == "X" || m_GameButtons[i, j].Text == "K")
                     {
                         m_Player1CoinSet.Add(m_GameButtons[i, j]);
                     }
 
-                    else if(m_GameButtons[i, j].Text == "O" || m_GameButtons[i, j].Text == "U")
+                    else if (m_GameButtons[i, j].Text == "O" || m_GameButtons[i, j].Text == "U")
                     {
                         m_Player2CoinSet.Add(m_GameButtons[i, j]);
                     }
@@ -110,10 +111,119 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
         }
 
+        private void checkIfPlayerOutOfMoves()  /// this need to be fixed -- sayes that in the initial board there are no moves to make
+        {
+            int p1moveCount = 0, p2moveCount = 0;
+
+            if (m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
+            {
+                foreach (UpgradedButton Coin in m_Player1CoinSet)
+                {
+                    if (Coin.canMove)
+                    {
+                        p1moveCount++;
+                    }
+                }
+
+                if (p1moveCount == 0)
+                {
+                    m_P1OutOfMoves = true;
+                }
+            }
+
+            else
+            {
+                foreach (UpgradedButton Coin in m_Player2CoinSet)
+                {
+                    if (Coin.canMove)
+                    {
+                        p2moveCount++;
+                    }
+                }
+
+                if (p2moveCount == 0)
+                {
+                    m_P2OutOfMoves = true;
+                }
+            }
+        }
+
+        private bool gameOver()
+        {
+            bool over = false;
+
+            if (m_P1OutOfMoves && !m_P2OutOfMoves)
+            {
+                m_Winner = PlayersTurn.ePlayersTurn.Player2;
+                over = true;
+            }
+            else if (!m_P1OutOfMoves && m_P2OutOfMoves)
+            {
+                m_Winner = PlayersTurn.ePlayersTurn.Player2;
+                over = true;
+            }
+            else if (m_P1OutOfMoves && m_P2OutOfMoves)
+            {
+                m_Tie = true;
+                over = true;
+            }
+
+            return over;
+        }
+
+        private void tieMessage()
+        {
+            string message = string.Format("Tie! {0} Another round?", Environment.NewLine);
+            string caption = "Tie!";
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+            DialogResult result;
+
+            result = MessageBox.Show(message, caption, buttons);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                initGameBoard();
+            }
+            else
+            {
+                this.Close();
+            }
+        }
+
+        private void winnerMessage()
+        {
+            string message = string.Format("{0} is the winner! {1} Another round?",m_Winner ,Environment.NewLine);
+            string caption = "Winner winner chicken dinner!";
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+            DialogResult result;
+
+            result = MessageBox.Show(message, caption, buttons);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                initGameBoard();
+            }
+            else
+            {
+                this.Close();
+            }
+        }
         private void buttonClicked(int i_Row, int i_Col)
         {
-            countPoints();
             checkAndUpdateWhoCanEatForCurrentPlayer();
+            checkAndUpdateWhoCanMove(m_CurrentTurn);
+            checkIfPlayerOutOfMoves();
+
+            if(gameOver())
+            {
+                if(m_Tie)
+                {
+                    tieMessage();
+                }
+                else
+                {
+                    winnerMessage();
+                }
+            }
+
             if (m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "")
             {
                 markSelectedButton(i_Row, i_Col);
@@ -338,7 +448,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 m_ComputerNextMoveButtons.Remove(m_ComputerNextMoveButtons[i]);
             }
 
-            checkAndUpdateWhoCanMove();
+            checkAndUpdateWhoCanMove(PlayersTurn.ePlayersTurn.Player2);
 
             foreach (UpgradedButton Coin in m_Player2CoinSet)
             {
@@ -427,6 +537,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 m_GameButtons[i_Row + 1, i_Col + 1].BackColor = m_ValidSpotColor;
             }
         }
+
         private bool stepIsValidAndPossible(int i_Row, int i_Col)
         {
             bool answer = false;
@@ -537,7 +648,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
         }
 
-
         private void initGameBoard()
         {
             int left, top = (Top / 2 - m_GameSize), coinsCount1 = 0, coinsCount2 = 0;
@@ -614,6 +724,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             i_Button.m_CanMoveDownLeft = false;
             i_Button.m_CanMoveDownRight = false;
         }
+
         private void checkAndUpdateWhoCanEatForCurrentPlayer()
         {
             m_EatingIsPossible = false;
@@ -636,13 +747,25 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
         }
 
-        private void checkAndUpdateWhoCanMove()
+        private void checkAndUpdateWhoCanMove(PlayersTurn.ePlayersTurn i_Player)
         {
-            foreach(UpgradedButton Coin in m_Player2CoinSet)
+            if(i_Player == PlayersTurn.ePlayersTurn.Player1)
             {
-                resetCoinPossibleEatingsAndMoves(Coin);
-                canCoinMove(Coin);
+                foreach (UpgradedButton Coin in m_Player1CoinSet)
+                {
+                    resetCoinPossibleEatingsAndMoves(Coin);
+                    canAnyCoinMove(Coin);
+                }
             }
+            else
+            {
+                foreach (UpgradedButton Coin in m_Player2CoinSet)
+                {
+                    resetCoinPossibleEatingsAndMoves(Coin);
+                    canCoinMove(Coin);
+                }
+            }
+
         }
 
         private void canCoinEat(UpgradedButton i_Coin)
@@ -725,15 +848,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             return answer;
         }
 
-
-        private void countPoints()
-        {
-            int startingNumOfPlayer = m_GameSize/2 * m_GameSize-1;
-
-            m_Player1Points = startingNumOfPlayer - m_Player1CoinSet.Count;
-            m_Player2Points = startingNumOfPlayer - m_Player2CoinSet.Count;
-        }
-        
         private void changeTurn()
         {
             m_CurrentTurn = m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1
@@ -769,6 +883,32 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
 
             return size;
+        }
+
+        private void canAnyCoinMove(UpgradedButton i_Coin)
+        {
+            int coinRow = i_Coin.m_PositionOnBoard.X;
+            int coinCol = i_Coin.m_PositionOnBoard.Y;
+
+            if (coinRow < m_GameSize - 1 && coinCol < m_GameSize - 1 && m_GameButtons[coinRow + 1, coinCol + 1].Text == "")
+            {
+                i_Coin.m_CanMoveDownRight = true;
+            }
+
+            if (coinRow < m_GameSize - 1 && coinCol >= 1 && m_GameButtons[coinRow + 1, coinCol - 1].Text == "")
+            {
+                i_Coin.m_CanMoveDownLeft = true;
+            }
+
+            if (coinRow >0 && coinCol < m_GameSize - 1 && m_GameButtons[coinRow - 1, coinCol + 1].Text == "")
+            {
+                i_Coin.m_CanMoveUpRight = true;
+            }
+
+            if (coinRow > 0 && coinCol >= 1 && m_GameButtons[coinRow - 1, coinCol - 1].Text == "")
+            {
+                i_Coin.m_CanMoveUpLeft = true;
+            }
         }
 
         private void canCoinMove(UpgradedButton i_Coin)
