@@ -27,6 +27,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private bool m_P1OutOfMoves = false, m_P2OutOfMoves = false, m_Tie = false;
         private PlayersTurn.ePlayersTurn m_Winner;
 
+        bool test = true;
+
         public GameBoardForm(
             string i_GameSize,
             string i_PlayerOneName,
@@ -124,7 +126,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                         p1moveCount++;
                     }
                 }
-
                 if (p1moveCount == 0)
                 {
                     m_P1OutOfMoves = true;
@@ -159,7 +160,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
             else if (!m_P1OutOfMoves && m_P2OutOfMoves)
             {
-                m_Winner = PlayersTurn.ePlayersTurn.Player2;
+                m_Winner = PlayersTurn.ePlayersTurn.Player1;
                 over = true;
             }
             else if (m_P1OutOfMoves && m_P2OutOfMoves)
@@ -191,6 +192,15 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void winnerMessage()
         {
+            if (m_Winner == PlayersTurn.ePlayersTurn.Player1)
+            {
+                m_Player1Points++;
+            }
+            else
+            {
+                m_Player2Points++;
+            }
+
             string message = string.Format("{0} is the winner! {1} Another round?",m_Winner ,Environment.NewLine);
             string caption = "Winner winner chicken dinner!";
             MessageBoxButtons buttons = MessageBoxButtons.YesNo;
@@ -206,24 +216,9 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 this.Close();
             }
         }
+
         private void buttonClicked(int i_Row, int i_Col)
         {
-            checkAndUpdateWhoCanEatForCurrentPlayer();
-            checkAndUpdateWhoCanMove(m_CurrentTurn);
-            checkIfPlayerOutOfMoves();
-
-            if(gameOver())
-            {
-                if(m_Tie)
-                {
-                    tieMessage();
-                }
-                else
-                {
-                    winnerMessage();
-                }
-            }
-
             if (m_CurrentPressedButton == null && m_GameButtons[i_Row, i_Col].Text != "")
             {
                 markSelectedButton(i_Row, i_Col);
@@ -273,6 +268,41 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
 
             updatePlayerCoinsArrays();
+
+            checkIfGameOverAndAnnounceWinOrTie();
+        }
+
+        void checkIfGameOverAndAnnounceWinOrTie()
+        {
+            checkAndUpdateWhoCanEatForCurrentPlayer();
+            checkAndUpdateWhoCanMove(m_CurrentTurn);
+            checkIfPlayerOutOfMoves();
+            checkIfPlayerOutOfCoins();
+
+            if (gameOver())
+            {
+                if (m_Tie)
+                {
+                    tieMessage();
+                }
+                else
+                {
+                    winnerMessage();
+                }
+            }
+        }
+
+        private void checkIfPlayerOutOfCoins()
+        {
+            if (m_Player1CoinSet.Count == 0)
+            {
+                m_P1OutOfMoves = true;
+            }
+
+            if (m_Player2CoinSet.Count == 0)
+            {
+                m_P2OutOfMoves = true;
+            }
         }
 
         private void makeComputerMove()
@@ -291,18 +321,21 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 updateComputerPossibleSteps();
                 randomCoinIndex = rnd.Next(0, m_ComputerNextMoveButtons.Count);
             }
-
-            buttonToMove = m_ComputerNextMoveButtons[randomCoinIndex];
-            m_CurrentPressedButton = buttonToMove;
-            getNewRowAndColForComputer(ref buttonToMove, out int newRow, out int newCol);
-            if(m_EatingIsPossible)
+            if (m_ComputerNextMoveButtons.Count != 0)
             {
-                makeEatingStep(buttonToMove, newRow, newCol);
-            }
+                buttonToMove = m_ComputerNextMoveButtons[randomCoinIndex];
+                m_CurrentPressedButton = buttonToMove;
+                getNewRowAndColForComputer(ref buttonToMove, out int newRow, out int newCol);
 
-            m_GameButtons[newRow, newCol].Text = buttonToMove.Text;
-            buttonToMove.Text = "";
-            resetSteps(newRow, newCol);
+                if (m_EatingIsPossible)
+                {
+                    makeEatingStep(buttonToMove, newRow, newCol);
+                }
+
+                m_GameButtons[newRow, newCol].Text = buttonToMove.Text;
+                buttonToMove.Text = "";
+                resetSteps(newRow, newCol);
+            }
         }
 
         private void getNewRowAndColForComputer(ref UpgradedButton i_Button, out int o_NewRow, out int o_NewCol)
@@ -448,7 +481,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 m_ComputerNextMoveButtons.Remove(m_ComputerNextMoveButtons[i]);
             }
 
-            checkAndUpdateWhoCanMove(PlayersTurn.ePlayersTurn.Player2);
+            resetCheckAndUpdateWhoCanMoveForComputerPlayer();
 
             foreach (UpgradedButton Coin in m_Player2CoinSet)
             {
@@ -650,7 +683,13 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void initGameBoard()
         {
-            int left, top = (Top / 2 - m_GameSize), coinsCount1 = 0, coinsCount2 = 0;
+            if (test == true)
+            {
+                m_GameSize = 4;
+
+            }
+
+            int left, top = (Top / 2 - m_GameSize);
             for(int i = 0; i < m_GameSize; i++)
             {
                 left = Left / 2 - (m_GameSize - 1);
@@ -712,16 +751,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_PlayerOne.BackColor = m_CurrentPlayerColor;
         }
 
-        private void resetCoinsPossibleMovesOnly(UpgradedButton i_Button)
-        {
-            i_Button.m_CanMoveUpRight = false;
-            i_Button.m_CanMoveUpLeft = false;
-            i_Button.m_CanMoveDownLeft = false;
-            i_Button.m_CanMoveDownRight = false;
-        }
-
-
-
         private void resetCoinPossibleEatingsAndMoves(UpgradedButton i_Button)
         {
             i_Button.m_CanEatDownLeft = false;
@@ -757,13 +786,21 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
         }
 
+        private void resetCheckAndUpdateWhoCanMoveForComputerPlayer()
+        {
+            foreach (UpgradedButton Coin in m_Player2CoinSet)
+            {
+                resetCoinPossibleEatingsAndMoves(Coin);
+                canCoinMove(Coin);
+            }
+        }
+
         private void checkAndUpdateWhoCanMove(PlayersTurn.ePlayersTurn i_Player)
         {
             if(i_Player == PlayersTurn.ePlayersTurn.Player1)
             {
                 foreach (UpgradedButton Coin in m_Player1CoinSet)
                 {
-                    //resetCoinPossibleEatingsAndMoves(Coin);
                     canAnyCoinMove(Coin);
                 }
             }
@@ -771,11 +808,9 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player2CoinSet)
                 {
-                    //resetCoinPossibleEatingsAndMoves(Coin);
                     canCoinMove(Coin);
                 }
             }
-
         }
 
         private void canCoinEat(UpgradedButton i_Coin)
