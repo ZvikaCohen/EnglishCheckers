@@ -15,7 +15,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private UpgradedButton m_SecondEatingButton = null;
         private PlayersTurn.ePlayersTurn m_CurrentTurn = PlayersTurn.ePlayersTurn.Player1;
         private Label m_PlayerOne, m_PlayerTwo;
-        private Color m_ValidSpotColor = Color.BurlyWood, m_CurrentPlayerColor = Color.BurlyWood;
+        private Color m_ValidSpotColor = Color.BurlyWood, m_CurrentPlayerColor = Color.FromArgb(0,153,255);
         private Size m_ButtonSize = new Size(40, 40);
         private bool m_EatingIsPossible = false;
         private bool m_SecondEatingStep = false;
@@ -24,7 +24,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private int m_Player1Points = 0, m_Player2Points = 0;
         private string m_PlayerOneName, m_PlayerTwoName, m_Winner;
         private bool m_P1OutOfMoves = false, m_P2OutOfMoves = false, m_Tie = false;
-
 
         public GameBoardForm(
             string i_GameSize,
