@@ -23,9 +23,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private int m_GameSize;
         private int m_PlayerOneCoinsCount, m_PlayerTwoCoinsCount;
         private int m_Player1Points = 0, m_Player2Points = 0;
-        private string m_PlayerOneName, m_PlayerTwoName;
+        private string m_PlayerOneName, m_PlayerTwoName, m_Winner;
         private bool m_P1OutOfMoves = false, m_P2OutOfMoves = false, m_Tie = false;
-        private PlayersTurn.ePlayersTurn m_Winner;
 
 
         public GameBoardForm(
@@ -155,12 +154,12 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             if (m_P1OutOfMoves && !m_P2OutOfMoves)
             {
-                m_Winner = PlayersTurn.ePlayersTurn.Player2;
+                m_Winner = m_PlayerTwoName;
                 over = true;
             }
             else if (!m_P1OutOfMoves && m_P2OutOfMoves)
             {
-                m_Winner = PlayersTurn.ePlayersTurn.Player1;
+                m_Winner = m_PlayerOneName;
                 over = true;
             }
             else if (m_P1OutOfMoves && m_P2OutOfMoves)
@@ -192,7 +191,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void winnerMessage()
         {
-            if (m_Winner == PlayersTurn.ePlayersTurn.Player1)
+            if (m_Winner == m_PlayerOneName)
             {
                 m_Player1Points++;
             }
