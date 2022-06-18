@@ -468,7 +468,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void updateComputerPossibleSteps()
         {
-            for (int i = m_ComputerNextMoveButtons.Count - 1; i >= 0; i--) // First, reset the old array.
+            for (int i = m_ComputerNextMoveButtons.Count - 1; i >= 0; i--)
             {
                 m_ComputerNextMoveButtons.Remove(m_ComputerNextMoveButtons[i]);
             }
@@ -510,12 +510,12 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             else
             {
-                if(m_GameButtons[i_CurrentRow, i_CurrentCol].Text == "X") // Player 1
+                if(m_GameButtons[i_CurrentRow, i_CurrentCol].Text == "X")
                 {
                     markUpLeft(i_CurrentRow, i_CurrentCol);
                     markUpRight(i_CurrentRow, i_CurrentCol);
                 }
-                else if(m_GameButtons[i_CurrentRow, i_CurrentCol].Text == "O") // Player 2
+                else if(m_GameButtons[i_CurrentRow, i_CurrentCol].Text == "O")
                 {
                     markDownLeft(i_CurrentRow, i_CurrentCol);
                     markDownRight(i_CurrentRow, i_CurrentCol);
@@ -644,7 +644,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             if (currentButtonPressedIsCurrentPlayer(i_Row, i_Col))
             {
                 m_CurrentPressedButton = m_GameButtons[i_Row, i_Col];
-                m_CurrentPressedButton.BackColor = Color.FromArgb(100, 200, 0);
+                m_CurrentPressedButton.BackColor = Color.FromArgb(0, 153, 255);
                 showPossibleStepsFromCurrentCoin(i_Row, i_Col);
             }
         }
