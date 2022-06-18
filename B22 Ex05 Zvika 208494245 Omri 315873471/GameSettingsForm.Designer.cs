@@ -1,7 +1,7 @@
 ﻿
 namespace B22_Ex05_Zvika_208494245_Omri_315873471
 {
-    partial class Form1
+    partial class GameSettingsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -194,9 +194,9 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Form1";
+            this.Name = "GameSettingsForm";
             this.Text = "Game Settings";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.GameSettingsForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -10,14 +10,10 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
     public class UpgradedButton : Button
     {
         public Point m_PositionOnBoard{get;set;}
-
-        public Point[,] m_PossibleEatingPoints;
-
         public bool m_CanEatUpRight = false;
         public bool m_CanEatDownRight = false;
         public bool m_CanEatUpLeft = false;
         public bool m_CanEatDownLeft = false;
-
         public bool m_CanMoveUpRight = false;
         public bool m_CanMoveDownRight = false;
         public bool m_CanMoveUpLeft = false;
@@ -28,7 +24,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_PositionOnBoard = i_PointOnBoard;
         }
 
-        public bool canMove
+        public bool CanMove
         {
             get
             {
@@ -37,7 +33,5 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 return (canEat || canMove);
             }
         }
-        
-
     }
 }

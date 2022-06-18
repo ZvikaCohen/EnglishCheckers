@@ -36,11 +36,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Direction.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="GameSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="GameSettingsForm.Designer.cs">
+      <DependentUpon>GameSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GameBoardForm.cs">
       <SubType>Form</SubType>
@@ -68,8 +68,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="GameSettingsForm.resx">
+      <DependentUpon>GameSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GameBoardForm.resx">
       <DependentUpon>GameBoardForm.cs</DependentUpon>
