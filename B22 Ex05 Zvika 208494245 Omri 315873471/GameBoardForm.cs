@@ -109,8 +109,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         {
             int p1moveCount = 0, p2moveCount = 0;
 
-            if (m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
-            {
+            // if (m_CurrentTurn == PlayersTurn.ePlayersTurn.Player1)
+            // {
                 foreach (UpgradedButton Coin in m_Player1CoinSet)
                 {
                     if (Coin.canMove)
@@ -122,23 +122,31 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 {
                     m_P1OutOfMoves = true;
                 }
-            }
-
-            else
-            {
-                foreach (UpgradedButton Coin in m_Player2CoinSet)
+                else
                 {
-                    if (Coin.canMove)
+                    m_P1OutOfMoves = false;
+                }
+            // }
+
+            // else
+            // {
+                foreach(UpgradedButton Coin in m_Player2CoinSet)
+                {
+                    if(Coin.canMove)
                     {
                         p2moveCount++;
                     }
                 }
 
-                if (p2moveCount == 0)
+                if(p2moveCount == 0)
                 {
                     m_P2OutOfMoves = true;
                 }
-            }
+                else
+                {
+                    m_P2OutOfMoves = false;
+                }
+            // }
         }
 
         private bool gameOver()
@@ -241,7 +249,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 if (stepIsValidAndPossible(i_Row, i_Col))
                 {
                     makeStep(i_Row, i_Col);
-                    if(!m_SecondEatingStep)
+
+                    if (!m_SecondEatingStep)
                     {
                         changeTurn();
                     }
@@ -272,7 +281,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                     changeTurn();
                 }
             }
-
+            
             updatePlayerCoinsArrays();
             checkIfGameOverAndAnnounceWinOrTie();
         }
@@ -286,6 +295,8 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
             if (gameOver())
             {
+                m_CurrentPressedButton = null;
+                m_CurrentTurn = PlayersTurn.ePlayersTurn.Player1;
                 if (m_Tie)
                 {
                     tieMessage();
@@ -299,8 +310,18 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void checkIfPlayerOutOfCoins()
         {
-            m_P1OutOfMoves = m_Player1CoinSet.Count == 0;
-            m_P2OutOfMoves = m_Player2CoinSet.Count == 0;
+            if(!m_P1OutOfMoves)
+            {
+                m_P1OutOfMoves = m_Player1CoinSet.Count == 0;
+            }
+
+            if (!m_P2OutOfMoves)
+            {
+                m_P2OutOfMoves = m_Player2CoinSet.Count == 0;
+            }
+            
+            // m_P1OutOfMoves = m_P1OutOfMoves || m_Player1CoinSet.Count == 0;
+           // m_P2OutOfMoves = m_P2OutOfMoves || m_Player2CoinSet.Count == 0;
 
             //if (m_Player1CoinSet.Count == 0)
             //{
@@ -695,46 +716,87 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void initGameBoard()
         {
-            int left, top = (Top / 2 - m_GameSize);
-            for(int i = 0; i < m_GameSize; i++)
+            int test = 0;
+            if(test == 1)
             {
-                left = Left / 2 - (m_GameSize - 1);
-                for(int j = 0; j < m_GameSize; j++)
+                int left, top = (Top / 2 - m_GameSize);
+                for (int i = 0; i < m_GameSize; i++)
                 {
-                    m_GameButtons[i, j] = new UpgradedButton(new Point(i, j));
-                    m_GameButtons[i, j].Location = new Point(left, top);
-                    m_GameButtons[i, j].Size = m_ButtonSize;
-                    left += m_ButtonSize.Width;
-                    if((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
+                    left = Left / 2 - (m_GameSize - 1);
+                    for (int j = 0; j < m_GameSize; j++)
                     {
-                        m_GameButtons[i, j].Enabled = false;
+                        m_GameButtons[i, j] = new UpgradedButton(new Point(i, j));
+                        m_GameButtons[i, j].Location = new Point(left, top);
+                        m_GameButtons[i, j].Size = m_ButtonSize;
+                        left += m_ButtonSize.Width;
+                        if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
+                        {
+                            m_GameButtons[i, j].Enabled = false;
+                        }
+
+                        else
+                        {
+                            m_GameButtons[i, j].BackColor = default(Color);
+                        }
+
+                        m_GameButtons[i, j].m_PositionOnBoard = new Point(i, j);
+                        Controls.Add(m_GameButtons[i, j]);
+                        int copyOfI = i, copyOfJ = j;
+                        m_GameButtons[i, j].Click += (sender, e) => buttonClicked(copyOfI, copyOfJ);
                     }
 
-                    else
+                    top += m_ButtonSize.Height;
+                }
+                m_GameButtons[0, 1].Text = "O";
+                m_GameButtons[1, 0].Text = "X";
+                m_GameButtons[1, 2].Text = "X";
+                m_GameButtons[3, 4].Text = "X";
+            }
+            else
+            {
+                int left, top = (Top / 2 - m_GameSize);
+                for (int i = 0; i < m_GameSize; i++)
+                {
+                    left = Left / 2 - (m_GameSize - 1);
+                    for (int j = 0; j < m_GameSize; j++)
                     {
-                        m_GameButtons[i, j].BackColor = default(Color);
+                        m_GameButtons[i, j] = new UpgradedButton(new Point(i, j));
+                        m_GameButtons[i, j].Location = new Point(left, top);
+                        m_GameButtons[i, j].Size = m_ButtonSize;
+                        left += m_ButtonSize.Width;
+                        if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
+                        {
+                            m_GameButtons[i, j].Enabled = false;
+                        }
+
+                        else
+                        {
+                            m_GameButtons[i, j].BackColor = default(Color);
+                        }
+
+                        if ((i < (m_GameSize / 2) - 1) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
+                        {
+                            m_GameButtons[i, j].Text = "O";
+                            m_Player2CoinSet.Add(m_GameButtons[i, j]);
+                        }
+
+                        else if (i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
+                        {
+                            m_GameButtons[i, j].Text = "X";
+                            m_Player1CoinSet.Add(m_GameButtons[i, j]);
+                        }
+
+                        m_GameButtons[i, j].m_PositionOnBoard = new Point(i, j);
+                        Controls.Add(m_GameButtons[i, j]);
+                        int copyOfI = i, copyOfJ = j;
+                        m_GameButtons[i, j].Click += (sender, e) => buttonClicked(copyOfI, copyOfJ);
                     }
 
-                    if((i < (m_GameSize / 2) - 1) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
-                    {
-                        m_GameButtons[i, j].Text = "O";
-                        m_Player2CoinSet.Add(m_GameButtons[i, j]);
-                    }
-
-                    else if(i > (m_GameSize / 2) && ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)))
-                    {
-                        m_GameButtons[i, j].Text = "X";
-                        m_Player1CoinSet.Add(m_GameButtons[i, j]);
-                    }
-
-                    m_GameButtons[i, j].m_PositionOnBoard = new Point(i, j);
-                    Controls.Add(m_GameButtons[i, j]);
-                    int copyOfI = i, copyOfJ = j;
-                    m_GameButtons[i, j].Click += (sender, e) => buttonClicked(copyOfI, copyOfJ);
+                    top += m_ButtonSize.Height;
                 }
 
-                top += m_ButtonSize.Height;
             }
+            
         }
 
         private void initLabels()
@@ -777,7 +839,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player1CoinSet)
                 {
-                    resetCoinPossibleEatingsAndMoves(Coin);
+                    resetCoinPossibleEats(Coin);
                     canCoinEat(Coin);
                 }
             }
@@ -786,7 +848,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player2CoinSet)
                 {
-                    resetCoinPossibleEatingsAndMoves(Coin);
+                    resetCoinPossibleEats(Coin);
                     canCoinEat(Coin);
                 }
             }
@@ -803,20 +865,38 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void checkAndUpdateWhoCanMove(PlayersTurn.ePlayersTurn i_Player)
         {
-            if(i_Player == PlayersTurn.ePlayersTurn.Player1)
-            {
-                foreach (UpgradedButton Coin in m_Player1CoinSet)
+           // if(i_Player == PlayersTurn.ePlayersTurn.Player1)
+          //  {
+                foreach(UpgradedButton Coin in m_Player1CoinSet)
                 {
+                    resetCoinPossibleMoves(Coin);
                     canAnyCoinMove(Coin);
                 }
-            }
-            else
-            {
-                foreach (UpgradedButton Coin in m_Player2CoinSet)
+          //  }
+          //  else
+          //  {
+                foreach(UpgradedButton Coin in m_Player2CoinSet)
                 {
+                    resetCoinPossibleMoves(Coin);
                     canCoinMove(Coin);
                 }
-            }
+          //  }
+        }
+
+        private void resetCoinPossibleMoves(UpgradedButton i_Button)
+        {
+            i_Button.m_CanMoveDownLeft = false;
+            i_Button.m_CanMoveDownRight = false;
+            i_Button.m_CanMoveUpLeft = false;
+            i_Button.m_CanMoveUpRight = false;
+        }
+
+        private void resetCoinPossibleEats(UpgradedButton i_Button)
+        {
+            i_Button.m_CanEatDownLeft = false;
+            i_Button.m_CanEatDownRight = false;
+            i_Button.m_CanEatUpLeft = false;
+            i_Button.m_CanEatUpRight = false;
         }
 
         private void canCoinEat(UpgradedButton i_Coin)
@@ -951,7 +1031,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
                 i_Coin.m_CanMoveDownLeft = true;
             }
 
-            if (coinRow >0 && coinCol < m_GameSize - 1 && m_GameButtons[coinRow - 1, coinCol + 1].Text == "")
+            if (coinRow > 0 && coinCol < m_GameSize - 1 && m_GameButtons[coinRow - 1, coinCol + 1].Text == "")
             {
                 i_Coin.m_CanMoveUpRight = true;
             }
