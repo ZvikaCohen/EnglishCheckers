@@ -274,7 +274,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             }
 
             updatePlayerCoinsArrays();
-
             checkIfGameOverAndAnnounceWinOrTie();
         }
 
@@ -300,15 +299,22 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void checkIfPlayerOutOfCoins()
         {
-            if (m_Player1CoinSet.Count == 0)
-            {
-                m_P1OutOfMoves = true;
-            }
+            m_P1OutOfMoves = m_Player1CoinSet.Count == 0;
+            m_P2OutOfMoves = m_Player2CoinSet.Count == 0;
 
-            if (m_Player2CoinSet.Count == 0)
-            {
-                m_P2OutOfMoves = true;
-            }
+            //if (m_Player1CoinSet.Count == 0)
+            //{
+            //    m_P1OutOfMoves = true;
+            //}
+            //else
+            //{
+            //    m_P1OutOfMoves = false;
+            //}
+
+            //if (m_Player2CoinSet.Count == 0)
+            //{
+            //    m_P2OutOfMoves = true;
+            //}
         }
 
         private void makeComputerMove()
