@@ -1,4 +1,4 @@
-# Matala5CSharp
+# English Checkers
 An english checkers game written with C# and winforms for c# and .NET framework course, MTA.
 
 Basic rules that are applied in the game:
