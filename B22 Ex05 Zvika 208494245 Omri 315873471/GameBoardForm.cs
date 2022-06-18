@@ -27,7 +27,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
         private bool m_P1OutOfMoves = false, m_P2OutOfMoves = false, m_Tie = false;
         private PlayersTurn.ePlayersTurn m_Winner;
 
-        bool test = true;
 
         public GameBoardForm(
             string i_GameSize,
@@ -58,14 +57,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void GameBoardForm_Load(object sender, EventArgs e)
         {
-            initLabels();
-            Left = 80;
-            Top = 100;
-            int newHeight = Top + m_GameSize * m_ButtonSize.Height;
-            int newWidth = Left + m_GameSize * m_ButtonSize.Width;
-            Size = new Size(newWidth, newHeight);
-            m_GameButtons = new UpgradedButton[m_GameSize, m_GameSize];
-            initGameBoard();
+            resetBoard();
         }
 
         private void formatPlayersCoinsArrays()
@@ -209,12 +201,26 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             result = MessageBox.Show(message, caption, buttons);
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                initGameBoard();
+                this.Controls.Clear();
+                resetBoard();
+
             }
             else
             {
                 this.Close();
             }
+        }
+
+        void resetBoard()
+        {
+            Left = 80;
+            Top = 100;
+            initLabels();
+            int newHeight = Top + m_GameSize * m_ButtonSize.Height;
+            int newWidth = Left + m_GameSize * m_ButtonSize.Width;
+            Size = new Size(newWidth, newHeight);
+            m_GameButtons = new UpgradedButton[m_GameSize, m_GameSize];
+            initGameBoard();
         }
 
         private void buttonClicked(int i_Row, int i_Col)
@@ -683,12 +689,6 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
 
         private void initGameBoard()
         {
-            if (test == true)
-            {
-                m_GameSize = 4;
-
-            }
-
             int left, top = (Top / 2 - m_GameSize);
             for(int i = 0; i < m_GameSize; i++)
             {
