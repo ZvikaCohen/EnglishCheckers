@@ -712,6 +712,16 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             m_PlayerOne.BackColor = m_CurrentPlayerColor;
         }
 
+        private void resetCoinsPossibleMovesOnly(UpgradedButton i_Button)
+        {
+            i_Button.m_CanMoveUpRight = false;
+            i_Button.m_CanMoveUpLeft = false;
+            i_Button.m_CanMoveDownLeft = false;
+            i_Button.m_CanMoveDownRight = false;
+        }
+
+
+
         private void resetCoinPossibleEatingsAndMoves(UpgradedButton i_Button)
         {
             i_Button.m_CanEatDownLeft = false;
@@ -753,7 +763,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player1CoinSet)
                 {
-                    resetCoinPossibleEatingsAndMoves(Coin);
+                    //resetCoinPossibleEatingsAndMoves(Coin);
                     canAnyCoinMove(Coin);
                 }
             }
@@ -761,7 +771,7 @@ namespace B22_Ex05_Zvika_208494245_Omri_315873471
             {
                 foreach (UpgradedButton Coin in m_Player2CoinSet)
                 {
-                    resetCoinPossibleEatingsAndMoves(Coin);
+                    //resetCoinPossibleEatingsAndMoves(Coin);
                     canCoinMove(Coin);
                 }
             }
